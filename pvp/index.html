@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HoloDive-PVP</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script>const socket = io();</script>
+</head>
+<body>
+    <div id="loading">Waiting for your opponent.</div>
+    <img id="start">
+    <img id="dice">
+    <div class="flex-container">
+        <div id="game">
+            <div id="screen">
+                <canvas id ="board"></canvas>
+                <img id="win">
+                <img id="lose">
+                <div id="player1"></div>
+                <div id="player2"></div>
+                <img id="player1-choose">
+                <img id="player2-choose">
+                <div id="music">
+                    <img class="music-btn" id="prevbtn">
+                    <img class="music-btn" id="playbtn">
+                    <img class="music-btn" id="nextbtn">
+                </div>
+            </div>
+            <div id="text"></div>
+        </div>
+        <div class="button">
+            <div class="controller">CONTROLLER
+                <div class="two-btn">
+                    <div class="choose-btn" id="atkbtn">攻擊</div>
+                    <div class="choose-btn" id="stkbtn">法術</div>
+                </div>
+                <div class="two-btn">
+                    <div class="choose-btn" id="defbtn">防禦</div>
+                    <div class="choose-btn" id="recbtn">回魔</div>
+                </div>
+                <div class="two-btn">
+                    <div class="choose-btn" id="bakbtn">投降</div>
+                </div>
+                <div class="two-btn">
+                    <div class="choose-btn" id="back">返回城鎮</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="client.js"></script>
+</body>
+</html>

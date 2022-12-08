@@ -1,6 +1,37 @@
+const addatk = document.getElementById('addatk');
+const adddef = document.getElementById('adddef');
+const addstk = document.getElementById('addstk');
+const addsdf = document.getElementById('addsdf');
+const recover = document.getElementById('recover'); 
+const addpvp = document.getElementById('addpvp');
+const relv = document.getElementById('relv');
+const newchar = document.getElementById('newchar');
+const coin = document.getElementById('coin');
+const diamond = document.getElementById('diamond');
+const dialogshop = document.getElementById('dialogshop');
+const dialogchar = document.getElementById('dialogchar');
+const shop = document.getElementById('shop');
+const cancelshop = document.getElementById('cancelshop');
+const cancelchar = document.getElementById('cancelchar');
+const charaddexp = document.getElementById('charaddexp');
+const charrecover = document.getElementById('charrecover');
+const charrelv = document.getElementById('charrelv');
+const charadd = document.getElementById('charadd');
+const screen = document.getElementById("screen");
+const stat = document.getElementById("status");
+const submit = document.getElementById("submit");
+const pve = document.getElementById('pve');
+const pvp = document.getElementById('pvp');
+const chardict={'HakuiKoyori':2,'HoshimachiSuisei':2,'HoushouMarine':2,'MinatoAqua':3,'NakiriAyame':2,'SakuraMiko':3,'ShirakamiFubuki':5,'TokinoSora':4,'TokoyamiTowa':4,'TsunomakiWatame':3,'UsadaPekora':4,'YukihanaLamy':2}
+var charselect,iconselect,pictime;
+
 function GetRan(...num){
     if(num.length==1)return Math.floor(Math.random()*(num[0]))+1;
     if(num.length==2)return Math.floor(Math.random()*(num[1]-num[0]+1))+num[0];
+}
+function localnameset(){
+    var localname=localStorage.getItem('yesa-name');
+    localname||localStorage.setItem('yesa-name',window.prompt('Enter your name','佑樹'));
 }
 function localset(){
     var useritem=[0,0,0,0,0,0,0,0,0,0];
@@ -13,6 +44,9 @@ function localcharset(char){
     var localchar=localStorage.getItem(`yesa-${char}`);
     localchar ? (userchar=localchar.split(',')) : (localStorage.setItem(`yesa-${char}`,userchar));
     return userchar;
+}
+function localchoose(){
+    localStorage.setItem('yesa-choose',[charselect,pictime]);
 }
 function localupdate(useritem=[0,0,0,0,0,0,0,0,0,0]){
     localStorage.setItem('yesa-item',useritem);
@@ -30,12 +64,12 @@ function Shop(n){
             localupdate(useritem);
         }else alert(`還缺少${1000*(parseInt(useritem[n])+1)-parseInt(useritem[0])}元`);
     }else if(n==6){
-        if(parseInt(useritem[0])>=1000){
-            useritem[0]=parseInt(useritem[0])-1000;
+        if(parseInt(useritem[0])>=500){
+            useritem[0]=parseInt(useritem[0])-500;
             useritem[n]=parseInt(useritem[n])+1;
             alert('購買成功');
             localupdate(useritem);
-        }else alert(`還缺少${1000-parseInt(useritem[0])}元`);
+        }else alert(`還缺少${500-parseInt(useritem[0])}元`);
     }else if(n==7){
         if(parseInt(useritem[1])>=200){
             useritem[1]=parseInt(useritem[1])-200;
@@ -73,30 +107,28 @@ function Openshop(){
     relv.innerHTML = '<br><br>'+useritem[8];
     newchar.innerHTML = '<br><br>'+useritem[9];
 }
-const addatk = document.getElementById('addatk');
-const adddef = document.getElementById('adddef');
-const addstk = document.getElementById('addstk');
-const addsdf = document.getElementById('addsdf');
-const recover = document.getElementById('recover'); 
-const addpvp = document.getElementById('addpvp');
-const relv = document.getElementById('relv');
-const newchar = document.getElementById('newchar');
-const coin = document.getElementById('coin');
-const diamond = document.getElementById('diamond');
-const dialogshop = document.getElementById('dialogshop');
-const dialogchar = document.getElementById('dialogchar');
-const shop = document.getElementById('shop');
-const cancelshop = document.getElementById('cancelshop');
-const cancelchar = document.getElementById('cancelchar');
-const charaddexp = document.getElementById('charaddexp');
-const charrecover = document.getElementById('charrecover');
-const charrelv = document.getElementById('charrelv');
-const charadd = document.getElementById('charadd');
-const screen = document.getElementById("screen");
-const stat = document.getElementById("status");
-const submit = document.getElementById("submit");
-const pve = document.getElementById('pve');
-const pvp = document.getElementById('pvp');
+function CharDisplay(){
+    for(var char in chardict){
+        if(localStorage.getItem(`yesa-${char}`))document.getElementById(char).style.filter='brightness(100%)';                
+        else document.getElementById(char).style.filter='brightness(50%)';
+    }
+}
+function LvUp(char){
+    var useritem=localset();
+    var userchar=localcharset(char);    
+    userchar[0]=parseInt(userchar[0])+1;
+    userchar[1]=parseInt(userchar[1])+10;
+    for(var i=2;i<6;i++){
+        userchar[i]=parseInt(userchar[i])+GetRan(3)+parseInt(useritem[i+1]);
+    }
+    stat.innerHTML=`等級: ${userchar[0]}<br>血量: ${userchar[1]}<br>攻擊: ${userchar[2]}<br>防禦: ${userchar[3]}<br>特攻: ${userchar[4]}<br>特防: ${userchar[5]}`;
+    localcharupdate(iconselect,userchar);
+    alert('等級提升');   
+}
+function RenewStatus(){
+    var userchar=localcharset(charselect);
+    stat.innerHTML=`等級: ${userchar[0]}<br>血量: ${userchar[1]}<br>攻擊: ${userchar[2]}<br>防禦: ${userchar[3]}<br>特攻: ${userchar[4]}<br>特防: ${userchar[5]}`;
+}
 
 shop.onclick=function(){Openshop();dialogshop.showModal();};
 cancelshop.onclick=function(){dialogshop.close();};
@@ -173,47 +205,12 @@ pve.onclick=function(){
 pvp.onclick=function(){
     window.location.href='pvp/index.html'; 
 };
-
-function CharDisplay(){
-    for(var char in chardict){
-        if(localStorage.getItem(`yesa-${char}`))document.getElementById(char).style.filter='brightness(100%)';                
-        else document.getElementById(char).style.filter='brightness(50%)';
-    }
-}
-
-function LvUp(char){
-    var useritem=localset();
-    var userchar=localcharset(char);    
-    userchar[0]=parseInt(userchar[0])+1;
-    userchar[1]=parseInt(userchar[1])+10;
-    for(var i=2;i<6;i++){
-        userchar[i]=parseInt(userchar[i])+GetRan(3)+parseInt(useritem[i+1]);
-    }
-    stat.innerHTML=`等級: ${userchar[0]}<br>血量: ${userchar[1]}<br>攻擊: ${userchar[2]}<br>防禦: ${userchar[3]}<br>特攻: ${userchar[4]}<br>特防: ${userchar[5]}`;
-    localcharupdate(iconselect,userchar);
-    alert('等級提升');   
-}
-
-function RenewStatus(){
-    var userchar=localcharset(charselect);
-    stat.innerHTML=`等級: ${userchar[0]}<br>血量: ${userchar[1]}<br>攻擊: ${userchar[2]}<br>防禦: ${userchar[3]}<br>特攻: ${userchar[4]}<br>特防: ${userchar[5]}`;
-}
-
-const chardict={'HakuiKoyori':2,'HoshimachiSuisei':2,'HoushouMarine':2,'MinatoAqua':3,'NakiriAyame':2,'SakuraMiko':3,'ShirakamiFubuki':5,'TokinoSora':4,'TokoyamiTowa':4,'TsunomakiWatame':3,'UsadaPekora':4,'YukihanaLamy':2}
-localcharset('TokinoSora');
-CharDisplay();
-var charselect='TokinoSora';
-var iconselect='TokinoSora';
-document.getElementById(charselect).style.border='5px solid greenyellow';
-screen.style.backgroundImage=`url("character/${charselect}/1.png")`;
-RenewStatus();
-var pictime=1;
 document.onclick=function(e){
     if((e.target.id=='screen')||Object.keys(chardict).includes(e.target.id)){
         if(e.target.id=="screen"){
             pictime++;
             if(pictime>chardict[charselect])pictime=1;
-            localStorage.setItem('yesa-choose',[charselect,pictime]);
+            localchoose();
             screen.style.backgroundImage=`url("character/${charselect}/${pictime}.png")`;
         }else if(document.getElementById(e.target.id).style.filter!='brightness(50%)'){
             document.getElementById(charselect).style.border='';
@@ -224,7 +221,7 @@ document.onclick=function(e){
             document.getElementById('dialogtext').innerHTML=iconselect;
             dialogchar.showModal();
             pictime=1;
-            localStorage.setItem('yesa-choose',[charselect,pictime]);
+            localchoose();
             RenewStatus();
         }else{
             iconselect=e.target.id;
@@ -243,3 +240,18 @@ document.getElementById("musicdex").onclick=function(){
         right.innerHTML='<iframe src="https://music-staging.holodex.net/org/Hololive"></iframe>';
     }
 };
+
+function Start(){
+    localset();
+    pictime=1;
+    charselect='TokinoSora';
+    iconselect=charselect;
+    localcharset(charselect);
+    localchoose();
+    RenewStatus();
+    CharDisplay();
+    document.getElementById(charselect).style.border='5px solid greenyellow';
+    screen.style.backgroundImage=`url("character/${charselect}/1.png")`;
+    localnameset();
+}
+window.addEventListener("load",Start,false);

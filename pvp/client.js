@@ -220,9 +220,10 @@ window.addEventListener("DOMContentLoaded", () => {
     var name;
     socket.on("connectioned", function(id){
         myId=id;
-        name=window.prompt('Enter your name','佑樹');
+        name=localStorage.getItem('yesa-name');
         var localchoose=localStorage.getItem('yesa-choose');
-        socket.emit("set",name,localchoose);
+        var localchar=localStorage.getItem(`yesa-${localchoose.split(',')[0]}`);
+        socket.emit("set",name,localchoose,localchar);
     });
     socket.on("currentPlayers", function (players) {
         if(Object.keys(players).length==2){

@@ -26,7 +26,7 @@ function GoE0(n){
 io.on('connection', (socket) => {
     console.log('a user connected');
     socket.emit('connectioned',socket.id);
-    socket.on('set', (name,choose,char) => {
+    socket.on('set', (name,choose,lv,atk,def,stk,sdf) => {
         onlineId[socket.id]=onlineCount;
         players[onlineCount] = {
             Id: socket.id,
@@ -34,13 +34,13 @@ io.on('connection', (socket) => {
             Character: choose,
             Choose: 0,
             Dice: 0,
-            Lv: 1,
-            Hp: parseInt(char[0])*10+90,
+            Lv: lv,
+            Hp: parseInt(lv)*10+90,
             PP: 15,
-            Atk: char[2],
-            Def: char[3],
-            Stk: char[4],
-            Sdf: char[5]
+            Atk: atk,
+            Def: def,
+            Stk: stk,
+            Sdf: sdf
         }
         onlineCount++;
         socket.emit('currentPlayers', players);

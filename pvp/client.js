@@ -185,7 +185,6 @@ function Back(){
     localitem=localStorage.getItem('yesa-item').split(',');
     if(wol==1)localitem[1]=parseInt(localitem[1])+200;
     else if(wol==0)localitem[1]=parseInt(localitem[1])+100;
-    else localitem[1]=parseInt(localitem[1])+50;
     localStorage.setItem('yesa-item',localitem);
     window.location.href='../index.html';
 }
@@ -222,8 +221,8 @@ window.addEventListener("DOMContentLoaded", () => {
         myId=id;
         name=localStorage.getItem('yesa-name');
         var localchoose=localStorage.getItem('yesa-choose');
-        var localchar=localStorage.getItem(`yesa-${localchoose.split(',')[0]}`);
-        socket.emit("set",name,localchoose,localchar);
+        var lchar=localStorage.getItem(`yesa-${localchoose.split(',')[0]}`).split(',');
+        socket.emit("set",name,localchoose,lchar[0],lchar[2],lchar[3],lchar[4],lchar[5]);
     });
     socket.on("currentPlayers", function (players) {
         if(Object.keys(players).length==2){

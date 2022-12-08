@@ -3,7 +3,7 @@ const adddef = document.getElementById('adddef');
 const addstk = document.getElementById('addstk');
 const addsdf = document.getElementById('addsdf');
 const recover = document.getElementById('recover'); 
-const addpvp = document.getElementById('addpvp');
+const addexp = document.getElementById('addexp');
 const relv = document.getElementById('relv');
 const newchar = document.getElementById('newchar');
 const coin = document.getElementById('coin');
@@ -102,7 +102,7 @@ function Openshop(){
     adddef.innerHTML = '<br><br>'+useritem[3];
     addstk.innerHTML = '<br><br>'+useritem[4];
     addsdf.innerHTML = '<br><br>'+useritem[5];
-    addpvp.innerHTML = '<br><br>'+useritem[6];
+    addexp.innerHTML = '<br><br>'+useritem[6];
     recover.innerHTML = '<br><br>'+useritem[7];
     relv.innerHTML = '<br><br>'+useritem[8];
     newchar.innerHTML = '<br><br>'+useritem[9];
@@ -137,7 +137,7 @@ addatk.onclick=function(){Shop(2);};
 adddef.onclick=function(){Shop(3);};
 addstk.onclick=function(){Shop(4);};
 addsdf.onclick=function(){Shop(5);};
-addpvp.onclick=function(){Shop(6);};
+addexp.onclick=function(){Shop(6);};
 recover.onclick=function(){Shop(7);};
 relv.onclick=function(){Shop(8);};
 newchar.onclick=function(){Shop(9);};
@@ -146,11 +146,11 @@ charaddexp.onclick=function(){
         var userchar=localcharset(iconselect);
         if(parseInt(userchar[0])<50){
             var useritem=localset();
-            if(parseInt(useritem[0])>=500){
-                useritem[0]=parseInt(useritem[0])-500;
+            if(parseInt(useritem[6])>0){
+                useritem[6]=parseInt(useritem[6])-1;
                 localupdate(useritem);
                 LvUp(iconselect);
-            }else alert('升一等要500元');
+            }else alert('沒有經驗藥水');
         }else alert('50等以上無法使用');
     }else alert('角色尚未解鎖');
 };
@@ -203,7 +203,7 @@ pve.onclick=function(){
     }else alert('請先恢復角色血量');
 };
 pvp.onclick=function(){
-    window.location.href='pvp/index.html'; 
+    window.location.href='pvp/index.html';
 };
 document.onclick=function(e){
     if((e.target.id=='screen')||Object.keys(chardict).includes(e.target.id)){

@@ -43,8 +43,8 @@ io.on('connection', (socket) => {
             Sdf: sdf
         }
         onlineCount++;
-        socket.emit('currentPlayers', players);
-        if(onlineCount==2)socket.broadcast.emit('newPlayer', players);
+        socket.emit('currentPlayers', players.slice(0,2));
+        if(onlineCount==2)socket.broadcast.emit('newPlayer', players.slice(0,2));
     });
     socket.on('disconnect', () => {
         console.log('user disconnected');

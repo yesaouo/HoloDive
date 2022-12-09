@@ -249,7 +249,8 @@ window.addEventListener("DOMContentLoaded", () => {
             player2_choose.style.display="none";
             alert("對手已離線");
             var localchoose=localStorage.getItem('yesa-choose');
-            socket.emit("set",name,localchoose);
+            var lchar=localStorage.getItem(`yesa-${localchoose.split(',')[0]}`).split(',');
+            socket.emit("set",name,localchoose,lchar[0],lchar[2],lchar[3],lchar[4],lchar[5]);
         }
     });
     socket.on("oneready", function (enemychoose) {

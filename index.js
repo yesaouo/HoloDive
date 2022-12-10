@@ -25,7 +25,7 @@ function GoE0(n){
 }
 
 io.on('connection', (socket) => {
-    console.log(socket.id+'is connected');
+    console.log(socket.id+' is connected');
     socket.emit('connectioned',onlineCount);
     socket.on('set', (name,choose,lv,atk,def,stk,sdf) => {
         players[onlineCount] = {

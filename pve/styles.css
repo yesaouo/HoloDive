@@ -1,7 +1,7 @@
 @import url(https://fonts.googleapis.com/earlyaccess/cwtexfangsong.css);
 html{height:100%; margin: 0; padding: 0;}
 body{
-    height:90%; margin: 0; padding: 2% 10%;
+    height:90%; margin: 0; padding: 2% 5%;
     font-size: 20px;
     text-align: center;
     font-family: "cwTeXFangSong", serif;
@@ -43,24 +43,22 @@ body{
 #win{
     position: absolute;
     top: 0%; left: 0%;
-    height: 60%; width: 100%;
+    height: 100%; width: 100%;
     background-color: lightgreen;
-    background-size: contain;
+    background-size: 100% auto;
     background-repeat: no-repeat;
-    background-position: center;
+    background-position: top;
     background-image: url("../resources/win.png");
-    z-index: 998;
 }
 #lose{
     position: absolute;
     top: 0%; left: 0%;
-    height: 60%; width: 100%;
+    height: 100%; width: 100%;
     background-color: lightcoral;
-    background-size: contain;
+    background-size: 100% auto;
     background-repeat: no-repeat;
-    background-position: center;
+    background-position: top;
     background-image: url("../resources/lose.png");
-    z-index: 998;
 }
 .flex-container {
     display: flex;
@@ -133,8 +131,8 @@ body{
     display: inline-block;
     height: 100%; width: 30%;
     vertical-align: middle;
-    padding: 2%;
-    font-size: 1.5em;
+    padding: 5% 0 0;
+    font-size: 1.3em;
     font-weight: bold;
     color:orange;
     box-shadow: 3px 3px 3px #6F6767;
@@ -148,7 +146,7 @@ body{
 }
 .choose-btn:hover{
     color: black;
-    font-size: 1.8em;
+    font-size: 1.6em;
 }
 #atkbtn{background-color: #e63946;}
 #stkbtn{background-color: #1d3557;}
@@ -214,7 +212,6 @@ body{
     background-image: url(../music/next.png);
 }
 @media screen and (max-width: 960px){
-    body{padding: 2% 5%;}
     .controller{font-size: 0.8em;}
     #text{font-size: 1.0em;}
 }
@@ -225,7 +222,7 @@ body{
     #text{border-bottom: 5px solid black;}
     #game{width: 100%;height: 70%; border: none;}
     .controller{width: 85%; margin: 7% 0 5%;}
-    .choose-btn{padding: 0; margin :0 5%;}
+    .choose-btn{padding:1% 0 0; margin :0 5%; width:25%;}
 }
 @media screen and (max-width: 400px){
     .controller{font-size: 0.6em;}

@@ -61,11 +61,10 @@ var board=document.getElementById("board");
 var ctx=board.getContext('2d');
 const Choose=['','普通攻擊','防禦','回魔','法術攻擊'];
 var choose=false,end=false,wol=-1;
-var user=[];
-atkbtn.onclick=function(){socket.emit('choose',1); choose=true; btnDisplay("none");};
-stkbtn.onclick=function(){socket.emit('choose',4); choose=true; btnDisplay("none");};
-defbtn.onclick=function(){socket.emit('choose',2); choose=true; btnDisplay("none");};
-recbtn.onclick=function(){socket.emit('choose',3); choose=true; btnDisplay("none");};
+atkbtn.onclick=function(){socket.emit('choose',1,user[0].Cnt,team); choose=true; btnDisplay("none");};
+stkbtn.onclick=function(){socket.emit('choose',4,user[0].Cnt,team); choose=true; btnDisplay("none");};
+defbtn.onclick=function(){socket.emit('choose',2,user[0].Cnt,team); choose=true; btnDisplay("none");};
+recbtn.onclick=function(){socket.emit('choose',3,user[0].Cnt,team); choose=true; btnDisplay("none");};
 bakbtn.onclick=function(){Back();};
 back.onclick=function(){Back();};
 player1.style.display="none";
@@ -214,73 +213,80 @@ function Start(){
     player2.style.display="";
     text.innerHTML=`你的對手是: ${user[1].Name}<br>使用的角色: ${user[1].Character.split(',')[0]} Lv: ${user[1].Lv}<br>`;
 }
+var myId,team,lchoose;
+var user=[],lchar=[];
 window.onresize=()=>{RePlace();};
 window.addEventListener("DOMContentLoaded", () => {
     var name;
-    socket.on("connectioned", function(id){
-        myId=id;
+    socket.on("connectioned", function(){
+        myId=socket.id;
+        console.log(myId);
         name=localStorage.getItem('yesa-name');
-        var localchoose=localStorage.getItem('yesa-choose');
-        var lchar=localStorage.getItem(`yesa-${localchoose.split(',')[0]}`).split(',');
-        socket.emit("set",name,localchoose,lchar[0],lchar[2],lchar[3],lchar[4],lchar[5]);
+        lchoose=localStorage.getItem('yesa-choose');
+        lchar=localStorage.getItem(`yesa-${lchoose.split(',')[0]}`).split(',');
+        socket.emit("set",name,lchoose,lchar[0],lchar[2],lchar[3],lchar[4],lchar[5]);
     });
-    socket.on("currentPlayers", function (players) {
-        if(Object.keys(players).length==2){
-            user[0]=players[1];
-            user[1]=players[0];
+    socket.on("newPlayer", function (players,battleId) {
+        if(players[0].Id==myId||players[1].Id==myId){
+            team=battleId;
+            if(players[0].Id==myId){
+                user[0]=players[0];
+                user[1]=players[1];
+            }
+            if(players[1].Id==myId){
+                user[0]=players[1];
+                user[1]=players[0];
+            }
             console.log(user);
             Start();
         }
     });
-    socket.on("newPlayer", function (players) {
-        user[0]=players[0];
-        user[1]=players[1];
-        console.log(user);
-        Start();
-    });
-    socket.on("disconnected", function () {
-        if(!end){
-            choose=false,end=false,wol=-1;
-            loading.style.display="";
-            start.style.display="";
-            player1.style.display="none";
-            player2.style.display="none";
-            player1_choose.style.display="none";
-            player2_choose.style.display="none";
-            alert("對手已離線");
-            var localchoose=localStorage.getItem('yesa-choose');
-            var lchar=localStorage.getItem(`yesa-${localchoose.split(',')[0]}`).split(',');
-            socket.emit("set",name,localchoose,lchar[0],lchar[2],lchar[3],lchar[4],lchar[5]);
+    socket.on("disconnected", function (battleId) {
+        if(battleId[0]==myId||battleId[1]==myId){
+            if(!end){
+                choose=false,end=false,wol=-1;
+                loading.style.display="";
+                start.style.display="";
+                player1.style.display="none";
+                player2.style.display="none";
+                player1_choose.style.display="none";
+                player2_choose.style.display="none";
+                alert("對手已離線，正在為您重新匹配");
+                socket.emit("set",name,lchoose,lchar[0],lchar[2],lchar[3],lchar[4],lchar[5]);
+            }
         }
     });
-    socket.on("oneready", function (enemychoose) {
-        if(choose)socket.emit("ready");
+    socket.on("oneready", function (t) {
+        if(t==team){
+            if(choose)socket.emit("ready",user[0].Cnt,user[1].Cnt,t);
+        }
     });
-    socket.on("battle", function (players,str,n) {
-        choose=false;
-        if(players[0].Id==user[0].Id){
-            user[0]=players[0];
-            user[1]=players[1];
+    socket.on("battle", function (p1,p2,str,n,t) {
+        if(t==team){
+            choose=false;
+            if(p1.Id==myId){
+                user[0]=p1;
+                user[1]=p2;
+            }else{
+                user[1]=p1;
+                user[0]=p2;
+            }
+            text.innerHTML=`${user[0].Name} 選擇了${Choose[user[0].Choose]}<br>${user[1].Name} 選擇了${Choose[user[1].Choose]}<br>`;
+            player1_choose.style.top=`${screen.clientHeight-150}px`;
+            player1_choose.style.left=`${32}px`;
+            player2_choose.style.top=`${screen.clientHeight-150}px`;
+            player2_choose.style.left=`${screen.clientWidth-96}px`;
+            if(user[0].Choose==1)player1_choose.style.backgroundImage="url('../resources/atk.png')";
+            if(user[0].Choose==2)player1_choose.style.backgroundImage="url('../resources/def.png')";
+            if(user[0].Choose==3)player1_choose.style.backgroundImage="url('../resources/rec.png')";
+            if(user[0].Choose==4)player1_choose.style.backgroundImage="url('../resources/stk.png')";
+            if(user[1].Choose==1)player2_choose.style.backgroundImage="url('../resources/atk.png')";
+            if(user[1].Choose==2)player2_choose.style.backgroundImage="url('../resources/def.png')";
+            if(user[1].Choose==3)player2_choose.style.backgroundImage="url('../resources/rec.png')";
+            if(user[1].Choose==4)player2_choose.style.backgroundImage="url('../resources/stk.png')";
+            player1_choose.style.display="";
+            player2_choose.style.display="";
+            Animate(str,n);
         }
-        else{
-            user[1]=players[0];
-            user[0]=players[1];
-        }
-        text.innerHTML=`${user[0].Name} 選擇了${Choose[user[0].Choose]}<br>${user[1].Name} 選擇了${Choose[user[1].Choose]}<br>`;
-        player1_choose.style.top=`${screen.clientHeight-150}px`;
-        player1_choose.style.left=`${32}px`;
-        player2_choose.style.top=`${screen.clientHeight-150}px`;
-        player2_choose.style.left=`${screen.clientWidth-96}px`;
-        if(user[0].Choose==1)player1_choose.style.backgroundImage="url('../resources/atk.png')";
-        if(user[0].Choose==2)player1_choose.style.backgroundImage="url('../resources/def.png')";
-        if(user[0].Choose==3)player1_choose.style.backgroundImage="url('../resources/rec.png')";
-        if(user[0].Choose==4)player1_choose.style.backgroundImage="url('../resources/stk.png')";
-        if(user[1].Choose==1)player2_choose.style.backgroundImage="url('../resources/atk.png')";
-        if(user[1].Choose==2)player2_choose.style.backgroundImage="url('../resources/def.png')";
-        if(user[1].Choose==3)player2_choose.style.backgroundImage="url('../resources/rec.png')";
-        if(user[1].Choose==4)player2_choose.style.backgroundImage="url('../resources/stk.png')";
-        player1_choose.style.display="";
-        player2_choose.style.display="";
-        Animate(str,n);
     });
 });

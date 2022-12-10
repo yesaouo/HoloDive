@@ -12,7 +12,8 @@ server.listen(PORT, () => {
 });
 
 let onlineCount=0;
-let onlineId=[];
+let onlineFront=0;
+let battleId=[];
 let players=[];
 function GetRan(...num){
     if(num.length==1)return Math.floor(Math.random()*(num[0]))+1;
@@ -24,12 +25,12 @@ function GoE0(n){
 }
 
 io.on('connection', (socket) => {
-    console.log('a user connected');
-    socket.emit('connectioned',socket.id);
+    console.log(socket.id+'is connected');
+    socket.emit('connectioned',onlineCount);
     socket.on('set', (name,choose,lv,atk,def,stk,sdf) => {
-        onlineId[socket.id]=onlineCount;
         players[onlineCount] = {
             Id: socket.id,
+            Cnt: onlineCount,
             Name: name,
             Character: choose,
             Choose: 0,
@@ -43,38 +44,39 @@ io.on('connection', (socket) => {
             Sdf: sdf
         }
         onlineCount++;
-        socket.emit('currentPlayers', players.slice(0,2));
-        if(onlineCount==2)socket.broadcast.emit('newPlayer', players.slice(0,2));
-    });
-    socket.on('disconnect', () => {
-        console.log('user disconnected');
-        onlineCount--;
-        if(onlineId[socket.id]<2){
-            players.shift();
-            players.shift();
-            delete onlineId[socket.id];
-            onlineCount=0;
-            io.emit('disconnected');
+        if(onlineCount-onlineFront==2){
+            onlineFront+=2;
+            battleId.push([players[onlineFront-2].Id,players[onlineFront-1].Id])
+            io.emit('newPlayer', players.slice(onlineFront-2,onlineFront),battleId.length-1);
         }
     });
-    socket.on('choose', (n) => {
-        players[onlineId[socket.id]].Choose = n;
-        socket.broadcast.emit('oneready', n);
+    socket.on('disconnect', () => {
+        for(var i=0; i<battleId.length; i++){
+            if(battleId[i][0]==socket.id||battleId[i][1]==socket.id){
+                io.emit('disconnected',battleId[i]);
+                console.log(socket.id+' is disconnected');
+                break;
+            }
+        }
     });
-    socket.on('ready', () => {
+    socket.on('choose', (n,cnt,team) => {
+        players[cnt].Choose = n;
+        socket.broadcast.emit('oneready',team);
+    });
+    socket.on('ready', (a,b,team) => {
         let Hp=[],PP=[];
-        Hp[0]=players[0].Hp;
-        Hp[1]=players[1].Hp;
-        PP[0]=players[0].PP;
-        PP[1]=players[1].PP;
-        let p1=players[0].Choose,p2=players[1].Choose;
+        Hp[0]=players[a].Hp;
+        Hp[1]=players[b].Hp;
+        PP[0]=players[a].PP;
+        PP[1]=players[b].PP;
+        let p1=players[a].Choose,p2=players[b].Choose;
         let result1=0,result2=0;
         const dice1=GetRan(6),dice2=GetRan(6);
-        players[0].Dice = dice1;
-        players[1].Dice = dice2;
-        var damage=[players[0].Atk-players[1].Def,players[0].Def-players[1].Atk,players[0].Stk-players[1].Sdf,players[0].Sdf-players[1].Stk];
+        players[a].Dice = dice1;
+        players[b].Dice = dice2;
+        var damage=[players[a].Atk-players[b].Def,players[a].Def-players[b].Atk,players[a].Stk-players[b].Sdf,players[a].Sdf-players[b].Stk];
         var str="";
-        const n1=players[0].Name,n2=players[1].Name;
+        const n1=players[a].Name,n2=players[b].Name;
         if((p1==1||p1==4)&&(p2==1||p2==4)){
             if(dice1>dice2){
                 result2=GoE0(p1==1?damage[0]:damage[2])+5*(dice1-dice2);
@@ -123,10 +125,10 @@ io.on('connection', (socket) => {
             PP[0]+=dice1*2;
         }
         Hp[0]-=result1; Hp[1]-=result2; PP[0]-=dice1; PP[1]-=dice2;
-        players[0].Hp=Hp[0];
-        players[1].Hp=Hp[1];
-        players[0].PP=PP[0];
-        players[1].PP=PP[1];
+        players[a].Hp=Hp[0];
+        players[b].Hp=Hp[1];
+        players[a].PP=PP[0];
+        players[b].PP=PP[1];
         if((Hp[0]<=0||PP[0]<0)&&(Hp[1]<=0||PP[1]<0)){
             str+='<br>'+n1;
             if(Hp[0]<=0)str+="血量歸零，";
@@ -135,20 +137,20 @@ io.on('connection', (socket) => {
             if(Hp[1]<=0)str+="血量歸零，";
             if(PP[1]<0)str+="魔力枯竭，";
             str+='<br>和局，雙方皆獲得100鑽石獎勵';
-            io.emit('battle', players, str, 0);
+            io.emit('battle',players[a],players[b],str,0,team);
         }else if(Hp[0]<=0||PP[0]<0){
             str+='<br>'+n1;
             if(Hp[0]<=0)str+="血量歸零，";
             if(PP[0]<0)str+="魔力枯竭，";
-            io.emit('battle', players, str, players[1].Id);
+            io.emit('battle',players[a],players[b],str,players[b].Id,team);
         }else if(Hp[1]<=0||PP[1]<0){
             str+='<br>'+n2;
             if(Hp[1]<=0)str+="血量歸零，";
             if(PP[1]<0)str+="魔力枯竭，";
-            io.emit('battle', players, str, players[0].Id);
+            io.emit('battle',players[a],players[b],str,players[a].Id,team);
         }else{
             str+=`<br>${n1}現在有${Hp[0]}點血量，${PP[0]}點能量<br>${n2}現在有${Hp[1]}點血量，${PP[1]}點能量`;
-            io.emit('battle', players, str, 1);
+            io.emit('battle', players[a],players[b],str,1,team);
         }
     });
 });

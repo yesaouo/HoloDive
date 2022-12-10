@@ -99,6 +99,10 @@ function Animate2(str,n){
         setTimeout(function(){Battle(str,n);},3000);
     }
 }
+function ScrollText() {
+    let h = document.querySelector('#text');
+    h.scrollTo(0, h.scrollHeight);
+}
 function Battle(str,n){
     dice.style.display="none";
     player1_choose.style.display="none";
@@ -125,6 +129,7 @@ function Battle(str,n){
         str+='<br>You Lose!';
     }else btnDisplay();
     text.innerHTML+=str;
+    ScrollText();
     DrawHpPP();
 }
 function DrawHpPP(){
@@ -271,7 +276,8 @@ window.addEventListener("DOMContentLoaded", () => {
                 user[1]=p1;
                 user[0]=p2;
             }
-            text.innerHTML=`${user[0].Name} 選擇了${Choose[user[0].Choose]}<br>${user[1].Name} 選擇了${Choose[user[1].Choose]}<br>`;
+            text.innerHTML+=`<hr>${user[0].Name} 選擇了${Choose[user[0].Choose]}<br>${user[1].Name} 選擇了${Choose[user[1].Choose]}<br>`;
+            ScrollText();
             player1_choose.style.top=`${screen.clientHeight-150}px`;
             player1_choose.style.left=`${32}px`;
             player2_choose.style.top=`${screen.clientHeight-150}px`;

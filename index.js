@@ -51,11 +51,14 @@ io.on('connection', (socket) => {
         }
     });
     socket.on('disconnect', () => {
-        for(var i=0; i<battleId.length; i++){
-            if(battleId[i][0]==socket.id||battleId[i][1]==socket.id){
-                io.emit('disconnected',battleId[i]);
-                console.log(socket.id+' is disconnected');
-                break;
+        console.log(socket.id+' is disconnected');
+        if(socket.id==players[onlineCount-1].Id&&onlineCount%2==1)onlineCount--;
+        else{
+            for(var i=battleId.length-1; i>=0; i--){
+                if(battleId[i][0]==socket.id||battleId[i][1]==socket.id){
+                    io.emit('disconnected',battleId[i]);
+                    break;
+                }
             }
         }
     });

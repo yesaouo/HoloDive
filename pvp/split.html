@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html,iframe,.left,.right{height: 100%;}
+        body{
+            height: 98%;
+            background-color: #1D3557;
+            display: flex;
+            flex-wrap: nowrap;
+        }
+        iframe{border: none; width: 100%;}
+        .left{width: 100%;}
+        .right{width: 50%;}
+        @media screen and (max-width: 640px){
+            body{flex-wrap: wrap;}
+            .right{height: 50%; width: 100%;}
+        }
+    </style>
+</head>
+<body>
+    <div class="left"><iframe src="index.html"></iframe></div>
+    <div class="right"><iframe src="chat.html"></iframe></div>
+</body>
+</html>

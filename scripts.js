@@ -203,7 +203,7 @@ pve.onclick=function(){
     }else alert('請先恢復角色血量');
 };
 pvp.onclick=function(){
-    window.location.href='pvp/index.html';
+    window.location.href='pvp/split.html';
 };
 document.onclick=function(e){
     if((e.target.id=='screen')||Object.keys(chardict).includes(e.target.id)){

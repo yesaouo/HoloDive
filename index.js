@@ -13,6 +13,7 @@ server.listen(PORT, () => {
 
 let onlineCount=0;
 let onlineFront=0;
+let onlineBack=0;
 let battleId=[];
 let players=[];
 function GetRan(...num){
@@ -27,6 +28,7 @@ function GoE0(n){
 io.on('connection', (socket) => {
     console.log(socket.id+' is connected');
     socket.emit('connectioned',onlineCount);
+    io.emit('chatconnect',onlineCount-onlineBack+1);
     socket.on('set', (name,choose,lv,atk,def,stk,sdf) => {
         players[onlineCount] = {
             Id: socket.id,
@@ -52,11 +54,16 @@ io.on('connection', (socket) => {
     });
     socket.on('disconnect', () => {
         console.log(socket.id+' is disconnected');
-        if(socket.id==players[onlineCount-1].Id&&onlineCount%2==1)onlineCount--;
+        if(onlineCount>0&&socket.id==players[onlineCount-1].Id&&onlineCount%2==1){
+            onlineCount--;
+            io.emit('chatdisconnect',onlineCount-onlineBack+1);
+        }
         else{
             for(var i=battleId.length-1; i>=0; i--){
                 if(battleId[i][0]==socket.id||battleId[i][1]==socket.id){
                     io.emit('disconnected',battleId[i]);
+                    onlineBack+=2;
+                    io.emit('chatdisconnect',onlineCount-onlineBack+1);
                     break;
                 }
             }
@@ -155,5 +162,10 @@ io.on('connection', (socket) => {
             str+=`<br>${n1}現在有${Hp[0]}點血量，${PP[0]}點能量<br>${n2}現在有${Hp[1]}點血量，${PP[1]}點能量`;
             io.emit('battle', players[a],players[b],str,1,team);
         }
+    });
+
+    //chat
+    socket.on('sendMessage', function(data){
+        io.sockets.emit('receiveMessage', data)
     });
 });

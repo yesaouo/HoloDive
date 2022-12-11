@@ -15,6 +15,7 @@
             flex-wrap: nowrap;
         }
         iframe{border: none; width: 100%;}
+        img{position: fixed; top: 3px; right: 3px; width: 48px; height: 48px;}
         .left{width: 100%;}
         .right{width: 50%;}
         @media screen and (max-width: 640px){
@@ -24,6 +25,7 @@
     </style>
 </head>
 <body>
+    <img src="../resources/cross.png" onclick="window.location.href='../index.html';">
     <div class="left"><iframe src="index.html"></iframe></div>
     <div class="right"><iframe src="chat.html"></iframe></div>
 </body>

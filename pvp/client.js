@@ -43,6 +43,7 @@ playbtn.onclick = function(event){
 var loading=document.getElementById("loading");
 var start=document.getElementById("start");
 var dice=document.getElementById("dice");
+var howtoend=document.getElementById('howtoend');
 var player1=document.getElementById("player1");
 var player2=document.getElementById("player2");
 var player1_choose=document.getElementById("player1-choose");
@@ -51,8 +52,6 @@ var atkbtn=document.getElementById("atkbtn");
 var stkbtn=document.getElementById("stkbtn");
 var defbtn=document.getElementById("defbtn");
 var recbtn=document.getElementById("recbtn");
-var bakbtn=document.getElementById("bakbtn");
-var back=document.getElementById("back");
 var win=document.getElementById("win");
 var lose=document.getElementById("lose");
 var text=document.getElementById("text");
@@ -60,13 +59,11 @@ var screen=document.getElementById("screen");
 var board=document.getElementById("board");
 var ctx=board.getContext('2d');
 const Choose=['','普通攻擊','防禦','回魔','法術攻擊'];
-var choose=false,end=false,wol=-1;
+var choose=false,end=false;
 atkbtn.onclick=function(){socket.emit('choose',1,user[0].Cnt,team); choose=true; btnDisplay("none");};
 stkbtn.onclick=function(){socket.emit('choose',4,user[0].Cnt,team); choose=true; btnDisplay("none");};
 defbtn.onclick=function(){socket.emit('choose',2,user[0].Cnt,team); choose=true; btnDisplay("none");};
 recbtn.onclick=function(){socket.emit('choose',3,user[0].Cnt,team); choose=true; btnDisplay("none");};
-bakbtn.onclick=function(){Back();};
-back.onclick=function(){Back();};
 player1.style.display="none";
 player2.style.display="none";
 player1_choose.style.display="none";
@@ -109,24 +106,24 @@ function Battle(str,n){
     player2_choose.style.display="none";
     text.innerHTML+=`擲骰中. 擲骰中.. 擲骰中...<br>你的點數是${user[0].Dice}，對手的點數是${user[1].Dice}<br>`;
     if(n==0){
-        wol=0;
-        bakbtn.style.display="none";
-        back.style.display="";
         end=true;
+        localitem=localStorage.getItem('yesa-item').split(',');
+        localitem[1]=parseInt(localitem[1])+100;
+        localStorage.setItem('yesa-item',localitem);
+        howtoend.innerHTML='Click the cross to exit.';
     }else if(n==user[0].Id){
-        wol=1;
-        bakbtn.style.display="none";
-        back.style.display="";
         win.style.display="";
         end=true;
         str+='<br>You Win!';
+        localitem=localStorage.getItem('yesa-item').split(',');
+        localitem[1]=parseInt(localitem[1])+200;
+        localStorage.setItem('yesa-item',localitem);
+        howtoend.innerHTML='Click the cross to exit.';
     }else if(n==user[1].Id){
-        wol=-1;
-        bakbtn.style.display="none";
-        back.style.display="";
         lose.style.display="";
         end=true;
         str+='<br>You Lose!';
+        howtoend.innerHTML='Click the cross to exit.';
     }else btnDisplay();
     text.innerHTML+=str;
     ScrollText();
@@ -185,24 +182,15 @@ function RePlace(){
     player2.style.top=(shei-150)+'px';
     player2.style.left=(swid-70-swid/5)+'px';
 }
-function Back(){
-    localitem=localStorage.getItem('yesa-item').split(',');
-    if(wol==1)localitem[1]=parseInt(localitem[1])+200;
-    else if(wol==0)localitem[1]=parseInt(localitem[1])+100;
-    localStorage.setItem('yesa-item',localitem);
-    window.location.href='../index.html';
-}
 function Reboot(){
     var charch=user[0].Character.split(',').concat(user[1].Character.split(','));
     player1.style.backgroundImage=`url('character/${charch[0]}/${charch[1]}.png')`;
     player2.style.backgroundImage=`url('character/${charch[2]}/${charch[3]}.png')`;
     text.innerHTML="";
     btnDisplay();
-    bakbtn.style.display="";
     win.style.display="none";
     lose.style.display="none";
     dice.style.display="none";
-    back.style.display="none";
     player1_choose.style.display="none";
     player2_choose.style.display="none";
     DrawHpPP();
@@ -249,7 +237,7 @@ window.addEventListener("DOMContentLoaded", () => {
     socket.on("disconnected", function (battleId) {
         if(battleId[0]==myId||battleId[1]==myId){
             if(!end){
-                choose=false,end=false,wol=-1;
+                choose=false,end=false;
                 loading.style.display="";
                 start.style.display="";
                 player1.style.display="none";

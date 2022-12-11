@@ -197,6 +197,10 @@ function sendMessage(){
      }
 }
 
+function ScrollText() {
+    let h = document.querySelector('#chat-wrap');
+    h.scrollTo(0, h.scrollHeight);
+}
 socket.on('receiveMessage', function(data){
      showMessage(data)
 });
@@ -214,6 +218,7 @@ function showMessage(data){
                 </div>`
     }
     document.getElementById('chat-con').innerHTML += html;
+    ScrollText();
 }
 </script>
 </body>

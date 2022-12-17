@@ -79,6 +79,7 @@
                height: 100px;
                background: rgba(255,255,255,.8);
                padding-top: 30px;
+               display: flex;
           }
           .bottom input{
                width: calc(100% - 120px); 
@@ -109,12 +110,12 @@
                transition: .2s;
                transform: scale(1.05);
           }
-          #sendBtn{
+          #sendBtn,#stikBtn{
                display: flex;
                justify-content: center;
                align-items: center;
           }
-          #sendBtn img{width: 15px;}
+          #sendBtn img,#stikBtn img{width: 15px;}
           .chat-item {
                width: 100%;
                margin-bottom: 20px;
@@ -155,7 +156,20 @@
                display: block;
                padding: 10px;
           }
+
+          dialog{
+               box-shadow: 0 2px 6px #ccc;
+               border-radius: 10px;
+               font-size: 24px;
+               z-index: 99;
+          }
+          dialog::backdrop{
+               background-color: rgba(0, 0, 0, 0.3);
+          }
      </style>
+     <script>
+          
+     </script>
 </head>
 <body>
      <div class="chat-wrap-top">
@@ -165,10 +179,25 @@
           <div id="chat-con" clearfix><br><br></div>
           <div class="bottom">
                <input type="text" id="sendtxt" placeholder="Type a message">
+               <button id="stikBtn"><img src="../resources/cool.png"></button>
                <button id="sendBtn"><img src="../resources/send.png"></button>
           </div>
      </div> 
+     <dialog id="dialogSticker"></dialog>
 <script>
+     var str='';
+     for(var i=0;i<40;i++)str+=`<img src="stickers/sticker (${i}).png" class="stickers" id="sticker${i}" width="74px">`;
+     document.getElementById('dialogSticker').innerHTML = str;
+     var dialogSticker=document.getElementById('dialogSticker');
+     document.getElementById('stikBtn').onclick=function(){dialogSticker.showModal();};
+     document.onclick=function(e){
+          if(e.target.id=='dialogSticker')dialogSticker.close();
+          if(e.target.id.indexOf('sticker')==0){
+               socket.emit('sendMessage', {username: myName, message: e.target.id});
+               dialogSticker.close();
+          }
+     };
+
 socket.on('chatconnect', function(onlineCount){
      document.getElementById('chat-title').innerHTML = `Comments ( ${onlineCount} )`;
 });
@@ -176,18 +205,15 @@ socket.on('chatdisconnect', function(onlineCount){
      document.getElementById('chat-title').innerHTML = `Comments ( ${onlineCount} )`;
 });
 
-document.getElementById('sendBtn').onclick = function(){
-     sendMessage();
+function ScrollText() {
+    let h = document.querySelector('#chat-wrap');
+    h.scrollTo(0, h.scrollHeight);
 }
+document.getElementById('sendBtn').onclick = function(){sendMessage();}
 function Keydown(e) {
-     switch (e.keyCode) {
-          case 13:
-               sendMessage()
-               break;
-     }
+     if(e.keyCode==13)sendMessage();
 }
 document.addEventListener('keydown', Keydown, false);
-
 function sendMessage(){
      var msg = document.getElementById('sendtxt');
      let txt = msg.value;
@@ -196,16 +222,12 @@ function sendMessage(){
           socket.emit('sendMessage', {username: myName, message: txt});
      }
 }
-
-function ScrollText() {
-    let h = document.querySelector('#chat-wrap');
-    h.scrollTo(0, h.scrollHeight);
-}
 socket.on('receiveMessage', function(data){
      showMessage(data)
 });
 function showMessage(data){
     var html;
+    if(data.message.indexOf('sticker')==0)data.message=`<img src="stickers/sticker (${data.message.substr(7)}).png" width="74px">`;
     if(data.username === myName){
         html = `<div class="chat-item item-right clearfix">
                     <span class="abs uname">me</span>
@@ -220,6 +242,7 @@ function showMessage(data){
     document.getElementById('chat-con').innerHTML += html;
     ScrollText();
 }
+
 </script>
 </body>
 </html>

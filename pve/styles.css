@@ -138,6 +138,7 @@ body{
     box-shadow: 3px 3px 3px #6F6767;
     text-decoration: none;
     z-index: 3;
+    cursor: pointer;
 }
 .music-btn{
     display: inline-block;

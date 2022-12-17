@@ -13,7 +13,7 @@ server.listen(PORT, () => {
 
 let onlineCount=0;
 let onlineFront=0;
-let onlineBack=0;
+let chatCount=0;
 let battleId=[];
 let players=[];
 function GetRan(...num){
@@ -26,9 +26,10 @@ function GoE0(n){
 }
 
 io.on('connection', (socket) => {
-    console.log(socket.id+' is connected');
+    console.log(socket.request.connection.remoteAddress+' connect');
+    chatCount++;
     socket.emit('connectioned',onlineCount);
-    io.emit('chatconnect',onlineCount-onlineBack+1);
+    io.emit('chatconnect',Math.ceil(chatCount/2));
     socket.on('set', (name,choose,lv,atk,def,stk,sdf) => {
         players[onlineCount] = {
             Id: socket.id,
@@ -53,17 +54,15 @@ io.on('connection', (socket) => {
         }
     });
     socket.on('disconnect', () => {
-        console.log(socket.id+' is disconnected');
+        console.log(socket.request.connection.remoteAddress+' disconnect');
+        chatCount--;
+        if(chatCount%2==0)io.emit('chatdisconnect',chatCount/2);
         if(onlineCount>0&&socket.id==players[onlineCount-1].Id&&onlineCount%2==1){
             onlineCount--;
-            io.emit('chatdisconnect',onlineCount-onlineBack+1);
-        }
-        else{
+        }else{
             for(var i=battleId.length-1; i>=0; i--){
                 if(battleId[i][0]==socket.id||battleId[i][1]==socket.id){
                     io.emit('disconnected',battleId[i]);
-                    onlineBack+=2;
-                    io.emit('chatdisconnect',onlineCount-onlineBack+1);
                     break;
                 }
             }

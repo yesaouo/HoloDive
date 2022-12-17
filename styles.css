@@ -67,6 +67,7 @@ iframe{
     text-decoration: none;
     color: white;
     display: inline-block;
+    cursor: pointer;
 }
 .link img{
     position: relative;

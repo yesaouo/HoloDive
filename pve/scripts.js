@@ -122,18 +122,18 @@ function Decide(p1_choose){
     player2_choose.style.top=`${screen.clientHeight-150}px`;
     player2_choose.style.left=`${screen.clientWidth-96}px`;
     if(p1_choose==1){
-        player1_choose.style.backgroundImage="url('../resources/atk.png')";
+        player1_choose.style.backgroundImage="url('../img/others/atk.png')";
     }else if(p1_choose==2){
-        player1_choose.style.backgroundImage="url('../resources/def.png')";
+        player1_choose.style.backgroundImage="url('../img/others/def.png')";
     }else if(p1_choose==3){
-        player1_choose.style.backgroundImage="url('../resources/rec.png')";
+        player1_choose.style.backgroundImage="url('../img/others/rec.png')";
     }else if(p1_choose==4){
-        player1_choose.style.backgroundImage="url('../resources/stk.png')";
+        player1_choose.style.backgroundImage="url('../img/others/stk.png')";
     }
-    if(p2_choose==1)player2_choose.style.backgroundImage="url('../resources/atk.png')";
-    if(p2_choose==2)player2_choose.style.backgroundImage="url('../resources/def.png')";
-    if(p2_choose==3)player2_choose.style.backgroundImage="url('../resources/rec.png')";
-    if(p2_choose==4)player2_choose.style.backgroundImage="url('../resources/stk.png')";
+    if(p2_choose==1)player2_choose.style.backgroundImage="url('../img/others/atk.png')";
+    if(p2_choose==2)player2_choose.style.backgroundImage="url('../img/others/def.png')";
+    if(p2_choose==3)player2_choose.style.backgroundImage="url('../img/others/rec.png')";
+    if(p2_choose==4)player2_choose.style.backgroundImage="url('../img/others/stk.png')";
     player1_choose.style.display="";
     player2_choose.style.display="";
     Animate(p1_choose,p2_choose);
@@ -257,7 +257,7 @@ function Battle(p1,p2){
 
 var damage;
 function Reboot(){
-    player1.style.backgroundImage=`url('../character/${charchoose[0]}/${charchoose[1]}.png')`;
+    player1.style.backgroundImage=`url('../img/character/${charchoose[0]}/${charchoose[1]}.png')`;
     player2.style.backgroundImage=`url('enemy/enemy\ \(${charstatus[0]}\).png')`;
     const lv=parseInt(charstatus[0]);
     damage=[parseInt(charstatus[2])-lv*GetRan(1,4),parseInt(charstatus[3])-lv*GetRan(1,4),parseInt(charstatus[4])-lv*GetRan(1,4),parseInt(charstatus[5])-lv*GetRan(1,4)];
@@ -293,38 +293,63 @@ function DrawHpPP(){
     var shei=screen.clientHeight;
     board.setAttribute("height",`${shei}px`);
     board.setAttribute("width",`${swid}px`);
-    ctx.clearRect(0, 0, swid, 20);
+    ctx.clearRect(0, 0, swid, 40);
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.lineTo(swid/2.5,0);
+    ctx.lineTo(swid/2.5,15);
+    ctx.lineTo(0,15);
+    ctx.stroke();
+    ctx.moveTo(swid,0);
+    ctx.lineTo(swid-swid/2.5,0);
+    ctx.lineTo(swid-swid/2.5,15);
+    ctx.lineTo(swid,15);
+    ctx.stroke();
+    ctx.moveTo(0,20);
+    ctx.lineTo(swid/5,20);
+    ctx.lineTo(swid/5,35);
+    ctx.lineTo(0,35);
+    ctx.stroke();
+    ctx.moveTo(swid,20);
+    ctx.lineTo(swid-swid/5,20);
+    ctx.lineTo(swid-swid/5,35);
+    ctx.lineTo(swid,35);
+    ctx.stroke();
+    ctx.closePath();
+
+    const Hpwid=swid/2.5/300;
     ctx.beginPath();
     ctx.fillStyle="#FF0000";
     ctx.moveTo(0,0);
-    ctx.lineTo(2*Hp[0],0);
-    ctx.lineTo(2*Hp[0],15);
+    ctx.lineTo((Hp[0]>300?300:Hp[0])*Hpwid,0);
+    ctx.lineTo((Hp[0]>300?300:Hp[0])*Hpwid,15);
     ctx.lineTo(0,15);
     ctx.fill();
     ctx.moveTo(swid,0);
-    ctx.lineTo(swid-2*Hp[1],0);
-    ctx.lineTo(swid-2*Hp[1],15);
+    ctx.lineTo(swid-(Hp[1]>300?300:Hp[1])*Hpwid,0);
+    ctx.lineTo(swid-(Hp[1]>300?300:Hp[1])*Hpwid,15);
     ctx.lineTo(swid,15);
     ctx.fill();
     ctx.closePath();
+    const PPwid=swid/5/30;
+    ctx.beginPath();
+    ctx.fillStyle="#00DDDD";
+    ctx.moveTo(0,20);
+    ctx.lineTo((PP[0]>30?30:PP[0])*PPwid,20);
+    ctx.lineTo((PP[0]>30?30:PP[0])*PPwid,35);
+    ctx.lineTo(0,35);
+    ctx.fill();
+    ctx.moveTo(swid,20);
+    ctx.lineTo(swid-(PP[1]>30?30:PP[1])*PPwid,20);
+    ctx.lineTo(swid-(PP[1]>30?30:PP[1])*PPwid,35);
+    ctx.lineTo(swid,35);
+    ctx.fill();
+    ctx.closePath();
+
     ctx.font="15px sans-serif";
     ctx.fillStyle="#00DDDD";
     ctx.fillText("Hp:"+Hp[0],0,12);
     ctx.fillText("Hp:"+Hp[1],swid-50,12);
-    ctx.clearRect(0, 20, swid,40);
-    ctx.beginPath();
-    ctx.fillStyle="#00DDDD";
-    ctx.moveTo(0,20);
-    ctx.lineTo(5*PP[0],20);
-    ctx.lineTo(5*PP[0],35);
-    ctx.lineTo(0,35);
-    ctx.fill();
-    ctx.moveTo(swid,20);
-    ctx.lineTo(swid-5*PP[1],20);
-    ctx.lineTo(swid-5*PP[1],35);
-    ctx.lineTo(swid,35);
-    ctx.fill();
-    ctx.closePath();
     ctx.font="15px sans-serif";
     ctx.fillStyle="#FF0000";
     ctx.fillText("PP:"+PP[0],0,33);

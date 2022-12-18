@@ -7,7 +7,7 @@ body{
     font-family: "cwTeXFangSong", serif;
     background-color: cornflowerblue;
     background-size: cover;
-    background-image: url("../resources/bg_blue.jpg");
+    background-image: url("../img/others/bg_blue.jpg");
 }
 p{position:relative; top:-50px;}
 #loading{
@@ -17,7 +17,7 @@ p{position:relative; top:-50px;}
     background-size: 50%;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url("../resources/loading.gif");
+    background-image: url("../img/others/loading.gif");
     z-index: 1001;
 }
 #start{
@@ -27,7 +27,7 @@ p{position:relative; top:-50px;}
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url("../resources/bg_blue.jpg");
+    background-image: url("../img/others/bg_blue.jpg");
     z-index: 1000;
 }
 #dice{
@@ -38,7 +38,7 @@ p{position:relative; top:-50px;}
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url("../resources/dice.gif");
+    background-image: url("../img/others/dice.gif");
     z-index: 999;
 }
 #win{
@@ -49,7 +49,7 @@ p{position:relative; top:-50px;}
     background-size: 100% auto;
     background-repeat: no-repeat;
     background-position: top;
-    background-image: url("../resources/win.png");
+    background-image: url("../img/others/win.png");
 }
 #lose{
     position: absolute;
@@ -59,7 +59,7 @@ p{position:relative; top:-50px;}
     background-size: 100% auto;
     background-repeat: no-repeat;
     background-position: top;
-    background-image: url("../resources/lose.png");
+    background-image: url("../img/others/lose.png");
 }
 .flex-container {
     display: flex;
@@ -69,7 +69,7 @@ p{position:relative; top:-50px;}
 .button{
     width: 30%;
     background-size: cover;
-    background-image: url("../resources/bg_green.jpg");
+    background-image: url("../img/others/bg_green.jpg");
     border: 5px solid black;
     display: flex;
     justify-content: center; 
@@ -92,7 +92,7 @@ p{position:relative; top:-50px;}
     background-color: white;
     background-size: 100% auto;
     background-repeat: no-repeat;
-    background-image: url("../resources/ft_bg.png");
+    background-image: url("../img/others/ft_bg.png");
 }
 #text{
     border-top: 5px solid black;
@@ -108,7 +108,7 @@ p{position:relative; top:-50px;}
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
-    background-image: url("../resources/bg_yellow.jpg");
+    background-image: url("../img/others/bg_yellow.jpg");
 }
 .controller{
     position: relative;

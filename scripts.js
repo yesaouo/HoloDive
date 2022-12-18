@@ -211,13 +211,13 @@ document.onclick=function(e){
             pictime++;
             if(pictime>chardict[charselect])pictime=1;
             localchoose();
-            screen.style.backgroundImage=`url("character/${charselect}/${pictime}.png")`;
+            screen.style.backgroundImage=`url("img/character/${charselect}/${pictime}.png")`;
         }else if(document.getElementById(e.target.id).style.filter!='brightness(50%)'){
             document.getElementById(charselect).style.border='';
             charselect=e.target.id;
             iconselect=charselect;
             document.getElementById(e.target.id).style.border='5px solid greenyellow';
-            screen.style.backgroundImage=`url("character/${charselect}/1.png")`;
+            screen.style.backgroundImage=`url("img/character/${charselect}/1.png")`;
             document.getElementById('dialogtext').innerHTML=iconselect;
             dialogchar.showModal();
             pictime=1;
@@ -251,7 +251,7 @@ function Start(){
     RenewStatus();
     CharDisplay();
     document.getElementById(charselect).style.border='5px solid greenyellow';
-    screen.style.backgroundImage=`url("character/${charselect}/1.png")`;
+    screen.style.backgroundImage=`url("img/character/${charselect}/1.png")`;
     localnameset();
 }
 window.addEventListener("load",Start,false);

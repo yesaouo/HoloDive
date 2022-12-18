@@ -97,11 +97,11 @@ dialog::backdrop{
     font-weight: bold;
     color: red;
 }
-#addatk{background-image: url("shop/atk.png");}
-#adddef{background-image: url("shop/def.png");}
-#addstk{background-image: url("shop/stk.png");}
-#addsdf{background-image: url("shop/sdf.png");}
-#recover{background-image: url("shop/recover.png");}
-#addexp{background-image: url("shop/exp.png");}
-#relv{background-image: url("shop/re.png");}
-#newchar{background-image: url("shop/new.png");}
+#addatk{background-image: url("img/shop/atk.png");}
+#adddef{background-image: url("img/shop/def.png");}
+#addstk{background-image: url("img/shop/stk.png");}
+#addsdf{background-image: url("img/shop/sdf.png");}
+#recover{background-image: url("img/shop/recover.png");}
+#addexp{background-image: url("img/shop/exp.png");}
+#relv{background-image: url("img/shop/re.png");}
+#newchar{background-image: url("img/shop/new.png");}

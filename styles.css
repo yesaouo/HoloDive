@@ -3,6 +3,8 @@ body{
     text-align: center;
     display: flex;
     flex-wrap: nowrap;
+    user-select: none;
+    -webkit-user-select: none;
 }
 #up{
     max-width: 960px;
@@ -80,6 +82,8 @@ iframe{
     background-color: #457B9D;
 }
 dialog{
+    user-select: none;
+    -webkit-user-select: none;
     box-shadow: 0 2px 6px #ccc;
     border-radius: 10px;
     font-size: 24px;

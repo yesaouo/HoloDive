@@ -1,7 +1,13 @@
 @import url(https://fonts.googleapis.com/earlyaccess/cwtexfangsong.css);
-html{height:100%; margin: 0; padding: 0;}
+html{
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+}
 body{
-    height:90%; margin: 0; padding: 2% 5%;
+    height: 90%; margin: 0; padding: 2% 5%;
     font-size: 20px;
     text-align: center;
     font-family: "cwTeXFangSong", serif;
@@ -141,6 +147,7 @@ body{
     cursor: pointer;
 }
 .music-btn{
+    cursor: pointer;
     display: inline-block;
     height: 100%; width: 30%;
     z-index: 3;

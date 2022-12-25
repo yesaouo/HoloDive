@@ -53,6 +53,10 @@ io.on('connection', (socket) => {
             io.emit('newPlayer', players.slice(onlineFront-2,onlineFront),battleId.length-1);
         }
     });
+    socket.on('solo', () => {
+        onlineCount--;
+        socket.emit('solostart',players[onlineCount]);
+    });
     socket.on('disconnect', () => {
         chatCount--;
         if(chatCount%2==0){

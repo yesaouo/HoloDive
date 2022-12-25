@@ -26,11 +26,11 @@ function GoE0(n){
 }
 
 io.on('connection', (socket) => {
-    console.log(socket.request.connection.remoteAddress+' connect');
     chatCount++;
     socket.emit('connectioned',onlineCount);
     io.emit('chatconnect',Math.ceil(chatCount/2));
     socket.on('set', (name,choose,lv,atk,def,stk,sdf) => {
+        console.log(`${name} connect(${chatCount/2})`);
         players[onlineCount] = {
             Id: socket.id,
             Cnt: onlineCount,
@@ -54,9 +54,11 @@ io.on('connection', (socket) => {
         }
     });
     socket.on('disconnect', () => {
-        console.log(socket.request.connection.remoteAddress+' disconnect');
         chatCount--;
-        if(chatCount%2==0)io.emit('chatdisconnect',chatCount/2);
+        if(chatCount%2==0){
+            io.emit('chatdisconnect',chatCount/2);
+            console.log(`Online(${chatCount/2})`);
+        }
         if(onlineCount>0&&socket.id==players[onlineCount-1].Id&&onlineCount%2==1){
             onlineCount--;
         }else{

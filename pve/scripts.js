@@ -157,7 +157,7 @@ function Animate2(p1,p2){
         setTimeout(function(){Animate2(p1,p2)},2);
     }else{
         dice.style.display="";
-        setTimeout(function(){Battle(p1,p2);},3000);
+        setTimeout(function(){Battle(p1,p2);},2500);
     }
 }
 function GoE0(n){

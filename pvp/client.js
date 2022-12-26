@@ -143,7 +143,7 @@ function Decide(p1){
     if(p2==1&&user[1].Atk-user[0].Def<user[1].Stk-user[0].Sdf)p2=4;
     user[0].Choose=p1;
     user[1].Choose=p2;
-    text.innerHTML+=`<hr>你選擇${Choose[p1]}，NPC選擇${Choose[p2]}<br>`;
+    text.innerHTML+=`<hr>${user[0].Name} 選擇了${Choose[p1]}<br>${user[1].Name} 選擇了${Choose[p2]}<br>`;
     ScrollText();
     player1_choose.style.top=`${screen.clientHeight-150}px`;
     player1_choose.style.left=`${32}px`;
@@ -270,7 +270,7 @@ function Animate2(str,n){
         setTimeout(function(){Animate2(str,n)},2);
     }else{
         dice.style.display="";
-        setTimeout(function(){Battle(str,n);},3000);
+        setTimeout(function(){Battle(str,n);},2500);
     }
 }
 function ScrollText() {
@@ -422,7 +422,7 @@ window.addEventListener("DOMContentLoaded", () => {
         socket.emit("set",name,lchoose,lchar[0],lchar[2],lchar[3],lchar[4],lchar[5]);
         setTimeout(function(){
             if(!opponent){
-                alert('未匹配到合適對手，將生成NPC與您戰鬥');
+                alert('尚未匹配到合適對手，將生成電腦與您戰鬥');
                 socket.emit("solo");
             }
         },30000);
@@ -430,8 +430,8 @@ window.addEventListener("DOMContentLoaded", () => {
     socket.on("solostart", function(players){
         user[0]=players;
         user[1]=Object.assign({},players);
-        user[1].Name='NPC';
-        user[1].Id='NPC';
+        user[1].Name='Yesa';
+        user[1].Id='Yesa';
         Start();
     });
     socket.on("newPlayer", function (players,battleId) {

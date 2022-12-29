@@ -413,7 +413,13 @@ var user=[],lchar=[];
 window.onresize=()=>{RePlace();};
 window.addEventListener("DOMContentLoaded", () => {
     var name;
+    function Ping(){
+        while(true){
+            setTimeout(function(){socket.emit("ping");},60000);
+        }
+    }
     socket.on("connectioned", function(){
+        Ping();
         myId=socket.id;
         console.log(myId);
         name=localStorage.getItem('yesa-name');

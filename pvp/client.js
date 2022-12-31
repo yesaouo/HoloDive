@@ -421,13 +421,11 @@ window.addEventListener("DOMContentLoaded", () => {
         lchar=localStorage.getItem(`yesa-${lchoose.split(',')[0]}`).split(',');
         socket.emit("set",name,lchoose,lchar[0],lchar[2],lchar[3],lchar[4],lchar[5]);
         setTimeout(function(){
-            if(!opponent){
-                alert('尚未匹配到合適對手，將生成電腦與您戰鬥');
-                socket.emit("solo");
-            }
+            if(!opponent)socket.emit("solo");
         },30000);
     });
     socket.on("solostart", function(players){
+        alert('未匹配到合適對手，生成電腦與您戰鬥');
         user[0]=players;
         user[1]=Object.assign({},players);
         user[1].Name='Yesa';

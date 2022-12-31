@@ -1,3 +1,4 @@
+@import url(https://fonts.googleapis.com/earlyaccess/cwtexyen.css);
 body{
     background-color: #1D3557;
     text-align: center;
@@ -5,6 +6,7 @@ body{
     flex-wrap: nowrap;
     user-select: none;
     -webkit-user-select: none;
+    font-family: "cwTeXYen", sans-serif;
 }
 #up{
     max-width: 960px;

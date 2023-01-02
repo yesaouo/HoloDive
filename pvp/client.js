@@ -277,6 +277,53 @@ function ScrollText() {
     let h = document.querySelector('#text');
     h.scrollTo(0, h.scrollHeight);
 }
+function localSet(){
+    let localobj=localStorage.getItem('yesa-HoloDive');
+    if(localobj){
+        localobj=JSON.parse(localobj);
+        localStorage.setItem('yesa-name',localobj.Name);
+        localStorage.setItem('yesa-item',localobj.Item);
+    }else{
+        alert('something went wrong');
+        window.location.href='../index.html';
+    }
+}
+function localUpdate(){
+    let localobj=localStorage.getItem('yesa-HoloDive');
+    if(localobj){
+        localobj=JSON.parse(localobj);
+        localobj.Name=localStorage.getItem('yesa-name');
+        localobj.Item=localStorage.getItem('yesa-item').split(',');
+        localStorage.setItem('yesa-HoloDive',JSON.stringify(localobj));
+        if(!localStorage.getItem('yesa-choose')){
+            alert('something went wrong');
+            window.location.href='../main/index.html';
+        }
+    }else{
+        alert('something went wrong');
+        window.location.href='../index.html';
+    }
+}
+function getItem(){
+    return localStorage.getItem('yesa-item').split(',');
+}
+function updateItem(item){
+    localStorage.setItem('yesa-item',item);
+    localUpdate();
+}
+function getChar(char){
+    let localobj=JSON.parse(localStorage.getItem('yesa-HoloDive'));
+    return localobj.Character[char];
+}
+function updateChar(char,userchar=[1,100,GetRan(10,20),GetRan(5,10),GetRan(10,20),GetRan(5,10)]){
+    let localobj=JSON.parse(localStorage.getItem('yesa-HoloDive'));
+    localobj.Character[char]=userchar;
+    console.log(char,localobj.Character[char])
+    localStorage.setItem('yesa-HoloDive',JSON.stringify(localobj));
+}
+function getChoose(){
+    return localStorage.getItem('yesa-choose').split(',');
+}
 function Battle(str,n){
     dice.style.display="none";
     player1_choose.style.display="none";
@@ -284,17 +331,17 @@ function Battle(str,n){
     text.innerHTML+=`擲骰中. 擲骰中.. 擲骰中...<br>你的點數是${user[0].Dice}，對手的點數是${user[1].Dice}<br>`;
     if(n==0){
         end=true;
-        localitem=localStorage.getItem('yesa-item').split(',');
+        localitem=getItem();
         localitem[1]=parseInt(localitem[1])+100;
-        localStorage.setItem('yesa-item',localitem);
+        updateItem(localitem);
         howtoend.innerHTML='Click the cross to exit.';
     }else if(n==user[0].Id){
         win.style.display="";
         end=true;
         str+='<br>You Win!';
-        localitem=localStorage.getItem('yesa-item').split(',');
+        localitem=getItem();
         localitem[1]=parseInt(localitem[1])+200;
-        localStorage.setItem('yesa-item',localitem);
+        updateItem(localitem);
         howtoend.innerHTML='Click the cross to exit.';
     }else if(n==user[1].Id){
         lose.style.display="";
@@ -400,6 +447,7 @@ function Reboot(){
 function Start(){
     Reboot();
     RePlace();
+    localSet();
     player1.innerHTML=`<p>${user[0].Name}<p>`;
     player2.innerHTML=`<p>${user[1].Name}<p>`;
     loading.style.display='none';
@@ -418,7 +466,7 @@ window.addEventListener("DOMContentLoaded", () => {
         console.log(myId);
         name=localStorage.getItem('yesa-name');
         lchoose=localStorage.getItem('yesa-choose');
-        lchar=localStorage.getItem(`yesa-${lchoose.split(',')[0]}`).split(',');
+        lchar=getChar(lchoose.split(',')[0]);
         socket.emit("set",name,lchoose,lchar[0],lchar[2],lchar[3],lchar[4],lchar[5]);
         setTimeout(function(){
             if(!opponent)socket.emit("solo");

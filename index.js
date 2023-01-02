@@ -7,6 +7,84 @@ app.use(express.static(__dirname));
 app.get('/', (req, res) => {
     res.sendFile( __dirname + '/index.html');
 });
+
+const MongoClient= require('mongodb').MongoClient;
+const url= "mongodb+srv://yesa:A8746z@cluster0.uiviw1n.mongodb.net/?retryWrites=true&w=majority";
+function mongonewUser(myobj){
+    MongoClient.connect(url, function(err, db) {
+        if(err) throw err;
+        const dbo= db.db("holodive");
+        dbo.collection("login").insertOne(myobj, function(err, res) {
+            if(err) throw err;
+            console.log("1 document inserted");
+            db.close();
+        });
+    });
+}
+app.get('/api/signin', (req, res) => {
+    let acc = req.query.acc;
+    let pas = req.query.pas;
+    let data = req.query.data;
+    if(data=="null"){
+        MongoClient.connect(url, function (err, db) {
+            if (err) throw err;
+            var dbo = db.db("holodive");
+            dbo.collection("login").find({Account: acc, Password: pas}).toArray(function (err, result) {
+                if (err) throw err;
+                if(result.length){
+                    console.log(result[0].Name+' login');
+                    res.send(result[0]);
+                }else{
+                    res.send("account or password incorrect");
+                }
+                db.close();
+            });
+        });
+    }else{
+        data = JSON.parse(data);
+        delete data._id;
+        MongoClient.connect(url, function (err, db) {
+            if (err) throw err;
+            const dbo = db.db("holodive");
+            const myquery = {Account: acc, Password: pas};
+            const newvalues = { $set: data };
+            dbo.collection("login").updateOne(myquery, newvalues, function (err, result) {
+                if (err) throw err;
+                console.log("1 document updated");
+                res.send(data);
+                db.close();
+            });
+        });
+    }
+});
+app.get('/api/signup', (req, res) => {
+    const acc = req.query.acc;
+    const pas = req.query.pas;
+    const name = req.query.name;
+    MongoClient.connect(url, function (err, db) {
+        if (err) throw err;
+        var dbo = db.db("holodive");
+        dbo.collection("login").find({Account: acc}).toArray(function (err, result) {
+            if (err) throw err;
+            if(result.length){
+                res.send("This account is already used.");
+            }else{
+                const char={'TokinoSora':[1,100,GetRan(10,20),GetRan(5,10),GetRan(10,20),GetRan(5,10)]};
+                let newUser = {
+                    Account: acc,
+                    Password: pas,
+                    Name: name,
+                    Item: [1000,200,0,0,0,0,0,0,0,1],
+                    Character: char
+                }
+                mongonewUser(newUser);
+                res.send("registration success");
+            }
+            db.close();
+        });
+    });
+});   
+  
 server.listen(PORT, () => {
     console.log("Server Started. "+PORT);
 });

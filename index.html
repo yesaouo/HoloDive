@@ -4,75 +4,115 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HoloDive</title>
-    <link rel="stylesheet" type="text/css" href="styles.css">
+    <title>Login</title>
     <link rel="shortcut icon" href="img/others/holodive.ico">
-</head>
-<body> 
-    <div class="left">
-        <div id="up">
-            <div id="screen"></div>
-            <div id="status"></div>
-        </div>
+    <style>
+        html,body{margin:0;padding:0;height:100%;width:100%;}
+        html{background-image:  url('img/others/fixed_bg.jpg');}
+        body{   
+            text-align: center;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        div{font-size:6em;}
+        p{font-size: 0.2em;}
+        font{font-weight: bold;font-size: 0.4em;cursor: pointer;}
+        font:hover{color:#e76f51;}
+        @media screen and (max-width: 560px){
+            div{font-size: 3em;}
+            img{height:35px;width:35px;}
+        }
+    </style>
+    <script>
+        function Login(){
+            if(document.getElementById("acc").value==''||document.getElementById("pas").value==''){
+                alert('輸入帳號和密碼(注意:只能輸入數字、英文字母或者底線)');
+            }else{
+                const acc = document.getElementById("acc").value;
+                const pas = document.getElementById("pas").value;
+                localStorage.setItem('yesa-account',acc);
+                localStorage.setItem('yesa-password',pas);
+                if(document.getElementById("cloud").checked){
+                    getUser(acc,pas);
+                }else{
+                    data=getLocal();
+                    if(data){
+                        getUser(acc,pas,data);
+                    }else{
+                        alert('There is no data on the local side.');
+                    }
+                }                
+            }
+        }
+        function SignUp(){
+            name=Name();
+            if(document.getElementById("acc").value==''||document.getElementById("pas").value==''){
+                alert('輸入帳號和密碼(注意:只能輸入數字、英文字母或者底線)');
+            }else{
+                const acc = document.getElementById("acc").value;
+                const pas = document.getElementById("pas").value;
+                localStorage.setItem('yesa-account',acc);
+                localStorage.setItem('yesa-password',pas);
+                getName(acc,pas,name);
+            }
+        }
+        function Name(){
+            let name;
+            while(!name){
+                name=window.prompt('Enter your name.');
+            }
+            return name;
+        }
+        async function getUser(acc,pas,data=null) {
+            try {
+                const response = await fetch(`/api/signin?acc=${acc}&pas=${pas}&data=${data}`);
+                const user = await response.text();
+                if(user=="account or password incorrect"){
+                    alert(user);
+                }else{
+                    localStorage.setItem('yesa-HoloDive',user);
+                    window.location.href='main/index.html';
+                }
+            } catch (error) {console.error(error);}
+        }
+        async function getName(acc,pas,name) {
+            try {
+                const response = await fetch(`/api/signup?acc=${acc}&pas=${pas}&name=${name}`);
+                const user = await response.text();
+                alert(user);
+            } catch (error) {console.error(error);}
+        }
         
-        <div class="middle">
-            <dialog id="dialogshop">
-                Shop<br><br><br>
-                <div id="shopitem">
-                    <div id="addatk"></div>
-                    <div id="adddef"></div>
-                    <div id="addstk"></div>
-                    <div id="addsdf"></div>
-                </div><br>
-                <div id="shopitem">
-                    <div id="addexp"></div>
-                    <div id="recover"></div>
-                    <div id="relv"></div>
-                    <div id="newchar"></div>
-                </div><br>
-                <img src="img/shop/coin.png" height="32px" width="32px"><a id="coin"></a>
-                <img src="img/shop/diamond.png" height="32px" width="32px"><a id ="diamond"></a>
-                <br><br><button id="cancelshop">Cancel</button>
-            </dialog>
-            <div class="link" id="shop">
-                <img src="img/icon/hololive.png">查看商店
-            </div>
-            <div class="link" id="pve">
-                <img src="img/icon/hololive.png">主線關卡
-            </div>
-            <div class="link" id="pvp">
-                <img src="img/icon/hololive.png">連線對戰
-            </div>
-            <div class="link" id="musicdex">
-                <img src="img/icon/hololive.png">Musicdex
-            </div>
-        </div>
-    
-        <div class="down">
-            <dialog id="dialogchar">
-                <div id="dialogtext"></div>
-                <button id="charaddexp">提升等級</button>
-                <button id="charrecover">回復血量</button>
-                <button id="charrelv">重置等級</button>
-                <button id="charadd">解鎖角色</button>
-                <button id="cancelchar">返回遊戲</button>
-            </dialog>
-            <img src="img/icon/Tokino_Sora_-_Main_Page_Icon.png" class="icon" id="TokinoSora">
-            <img src="img/icon/Hakui_Koyori_-_Main_Page_Icon.png" class="icon" id="HakuiKoyori">
-            <img src="img/icon/Hoshimachi_Suisei_-_Main_Page_Icon.png" class="icon" id="HoshimachiSuisei">
-            <img src="img/icon/Houshou_Marine_-_Main_Page_Icon.png" class="icon" id="HoushouMarine">
-            <img src="img/icon/Minato_Aqua_-_Main_Page_Icon.png" class="icon" id="MinatoAqua">
-            <img src="img/icon/Nakiri_Ayame_-_Main_Page_Icon.png" class="icon" id="NakiriAyame">
-            <img src="img/icon/Sakura_Miko_-_Main_Page_Icon.png" class="icon" id="SakuraMiko">
-            <img src="img/icon/Shirakami_Fubuki_-_Main_Page_Icon.png" class="icon" id="ShirakamiFubuki">
-            <img src="img/icon/Tokoyami_Towa_-_Main_Page_Icon.png" class="icon" id="TokoyamiTowa">
-            <img src="img/icon/Tsunomaki_Watame_-_Main_Page_Icon.png" class="icon" id="TsunomakiWatame">
-            <img src="img/icon/Usada_Pekora_-_Main_Page_Icon.png" class="icon" id="UsadaPekora">
-            <img src="img/icon/Yukihana_Lamy_-_Main_Page_Icon.png" class="icon" id="YukihanaLamy">
-        </div>
+        function getLocal(){
+            var HoloDive=localStorage.getItem('yesa-HoloDive');
+            return HoloDive;
+        }
+        function Start(){
+            var localacc=localStorage.getItem('yesa-account');
+            if(localacc)document.getElementById("acc").value=localacc;
+            var localpas=localStorage.getItem('yesa-password');
+            if(localpas)document.getElementById("pas").value=localpas;
+        }
+        window.addEventListener("load",Start,false);
+    </script>
+</head>
+<body>
+    <div>
+        <img src="img/others/login.png" height="70" width="70"><a>HoloDive</a>
+        <form>
+            <p>
+                <input id="acc" placeholder="Account" type="text" onkeyup="value=value.replace(/[^\w\.\/]/ig,'')">
+                <br><input id="pas" placeholder="Password" type="password">
+                <br>Sync:<label><input type="radio" id="local" name="contact">local</label>
+                <label><input type="radio" id="cloud" name="contact" checked>cloud</label>
+            </p>
+            <font id="localbtn" color="#f4a261" onclick="SignUp();"><a>Sign up</a></font>&nbsp
+            <font id="loginbtn" color="#f4a261" onclick="Login();"><a>Sign in</a></font>
+        </form>
     </div>
-    <div id="right"></div>
-
-    <script src="scripts.js"></script>
 </body>
 </html>

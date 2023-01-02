@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HoloDive</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="shortcut icon" href="../img/others/holodive.ico">
+</head>
+<body> 
+    <div class="left">
+        <div id="up">
+            <div id="screen"></div>
+            <div id="status"></div>
+        </div>
+        
+        <div class="middle">
+            <dialog id="dialogshop">
+                Shop<br><br><br>
+                <div id="shopitem">
+                    <div id="addatk"></div>
+                    <div id="adddef"></div>
+                    <div id="addstk"></div>
+                    <div id="addsdf"></div>
+                </div><br>
+                <div id="shopitem">
+                    <div id="addexp"></div>
+                    <div id="recover"></div>
+                    <div id="relv"></div>
+                    <div id="newchar"></div>
+                </div><br>
+                <img src="../img/shop/coin.png" height="32px" width="32px"><a id="coin"></a>
+                <img src="../img/shop/diamond.png" height="32px" width="32px"><a id ="diamond"></a>
+                <br><br><button id="cancelshop">Cancel</button>
+            </dialog>
+            <div class="link" id="shop">
+                <img src="../img/icon/hololive.png">查看商店
+            </div>
+            <div class="link" id="pve">
+                <img src="../img/icon/hololive.png">主線關卡
+            </div>
+            <div class="link" id="pvp">
+                <img src="../img/icon/hololive.png">連線對戰
+            </div>
+            <div class="link" id="cloud">
+                <img src="../img/icon/hololive.png">存至雲端
+            </div>
+            <div class="link" id="musicdex">
+                <img src="../img/icon/hololive.png">Musicdex
+            </div>
+        </div>
+    
+        <div class="down">
+            <dialog id="dialogchar">
+                <div id="dialogtext"></div>
+                <button id="charaddexp">提升等級</button>
+                <button id="charrecover">回復血量</button>
+                <button id="charrelv">重置等級</button>
+                <button id="charadd">解鎖角色</button>
+                <button id="cancelchar">返回遊戲</button>
+            </dialog>
+            <img src="../img/icon/Tokino_Sora_-_Main_Page_Icon.png" class="icon" id="TokinoSora">
+            <img src="../img/icon/Hakui_Koyori_-_Main_Page_Icon.png" class="icon" id="HakuiKoyori">
+            <img src="../img/icon/Hoshimachi_Suisei_-_Main_Page_Icon.png" class="icon" id="HoshimachiSuisei">
+            <img src="../img/icon/Houshou_Marine_-_Main_Page_Icon.png" class="icon" id="HoushouMarine">
+            <img src="../img/icon/Minato_Aqua_-_Main_Page_Icon.png" class="icon" id="MinatoAqua">
+            <img src="../img/icon/Nakiri_Ayame_-_Main_Page_Icon.png" class="icon" id="NakiriAyame">
+            <img src="../img/icon/Sakura_Miko_-_Main_Page_Icon.png" class="icon" id="SakuraMiko">
+            <img src="../img/icon/Shirakami_Fubuki_-_Main_Page_Icon.png" class="icon" id="ShirakamiFubuki">
+            <img src="../img/icon/Tokoyami_Towa_-_Main_Page_Icon.png" class="icon" id="TokoyamiTowa">
+            <img src="../img/icon/Tsunomaki_Watame_-_Main_Page_Icon.png" class="icon" id="TsunomakiWatame">
+            <img src="../img/icon/Usada_Pekora_-_Main_Page_Icon.png" class="icon" id="UsadaPekora">
+            <img src="../img/icon/Yukihana_Lamy_-_Main_Page_Icon.png" class="icon" id="YukihanaLamy">
+        </div>
+    </div>
+    <div id="right"></div>
+
+    <script src="scripts.js"></script>
+</body>
+</html>

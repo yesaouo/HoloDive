@@ -39,9 +39,11 @@ playbtn.onclick = function(event){
     else PauseAudio();
     play=!play;
 }
+
 var player1=document.getElementById("player1");
 var player2=document.getElementById("player2");
-//controller
+var player1_choose=document.getElementById("player1-choose");
+var player2_choose=document.getElementById("player2-choose");
 var atkbtn=document.getElementById("atkbtn");
 var stkbtn=document.getElementById("stkbtn");
 var defbtn=document.getElementById("defbtn");
@@ -49,6 +51,26 @@ var recbtn=document.getElementById("recbtn");
 var bakbtn=document.getElementById("bakbtn");
 var next=document.getElementById("next");
 var back=document.getElementById("back");
+var win=document.getElementById("win");
+var lose=document.getElementById("lose");
+var text=document.getElementById("text");
+var start=document.getElementById("start");
+var dice=document.getElementById("dice");
+var screen=document.getElementById("screen");
+var board=document.getElementById("board");
+var ctx=board.getContext('2d');
+const Choose=['','普通攻擊','防禦','回魔','法術攻擊'];
+let localobj=JSON.parse(localStorage.getItem('yesa-HoloDive'));
+let charchoose=getChoose();
+let charstatus=localobj.Character[charchoose[0]];
+let Hp=[],PP=[];
+let localItem=localStorage.getItem('yesa-item').split(',');
+let damage=[];
+let aware=false;
+player1.style.display="none";
+player2.style.display="none";
+player1_choose.style.display="none";
+player2_choose.style.display="none";
 atkbtn.onclick=function(){Decide(1);};
 stkbtn.onclick=function(){Decide(4);};
 defbtn.onclick=function(){Decide(2);};
@@ -56,27 +78,78 @@ recbtn.onclick=function(){Decide(3);};
 bakbtn.onclick=function(){Back();};
 next.onclick=function(){Reboot();};
 back.onclick=function(){Back();};
-function Back(){
-    localStorage.setItem(`yesa-${charchoose[0]}`,charstatus);
-    window.location.href='../index.html';
+window.onresize=()=>{RePlace();}
+window.addEventListener("load",Start,false);
+
+function localSet(){
+    let localobj=localStorage.getItem('yesa-HoloDive');
+    if(localobj){
+        localobj=JSON.parse(localobj);
+        localStorage.setItem('yesa-name',localobj.Name);
+        localStorage.setItem('yesa-item',localobj.Item);
+    }else{
+        alert('something went wrong');
+        window.location.href='../index.html';
+    }
 }
-//random
+function localUpdate(){
+    let localobj=localStorage.getItem('yesa-HoloDive');
+    if(localobj){
+        localobj=JSON.parse(localobj);
+        localobj.Name=localStorage.getItem('yesa-name');
+        localobj.Item=localStorage.getItem('yesa-item').split(',');
+        localStorage.setItem('yesa-HoloDive',JSON.stringify(localobj));
+        if(!localStorage.getItem('yesa-choose')){
+            alert('something went wrong');
+            window.location.href='../main/index.html';
+        }
+    }else{
+        alert('something went wrong');
+        window.location.href='../index.html';
+    }
+}
+function getItem(){
+    return localStorage.getItem('yesa-item').split(',');
+}
+function updateItem(item){
+    localStorage.setItem('yesa-item',item);
+    localUpdate();
+}
+function getChar(char){
+    let localobj=JSON.parse(localStorage.getItem('yesa-HoloDive'));
+    return localobj.Character[char];
+}
+function updateChar(char,userchar=[1,100,GetRan(10,20),GetRan(5,10),GetRan(10,20),GetRan(5,10)]){
+    let localobj=JSON.parse(localStorage.getItem('yesa-HoloDive'));
+    localobj.Character[char]=userchar;
+    console.log(char,localobj.Character[char])
+    localStorage.setItem('yesa-HoloDive',JSON.stringify(localobj));
+}
+function getChoose(){
+    return localStorage.getItem('yesa-choose').split(',');
+}
+function LvUp(){
+    charstatus[0]=parseInt(charstatus[0])+1;
+    charstatus[1]=parseInt(charstatus[1])+10;
+    for(let i=2;i<6;i++){
+        charstatus[i]=parseInt(charstatus[i])+GetRan(3)+parseInt(localItem[i+1]);
+    }
+    updateChar(charchoose[0],charstatus);
+    localItem[0]=parseInt(localItem[0])+parseInt(charstatus[0])*100;
+    updateItem(localItem);
+}
+function Back(){
+    updateChar(charchoose[0],charstatus);
+    window.location.href='../main/index.html';
+}
 function GetRan(...num){
     if(num.length==1)return Math.floor(Math.random()*(num[0]))+1;
     if(num.length==2)return Math.floor(Math.random()*(num[1]-num[0]+1))+num[0];
 }
-//game
-var charchoose=LocalCheck();
-var charstatus=localStorage.getItem(`yesa-${charchoose[0]}`).split(',');
-var charitem=localStorage.getItem('yesa-item').split(',');
+function GoE0(n){
+    return (n>0)?n:0;
+}
 
-var win=document.getElementById("win");
-var lose=document.getElementById("lose");
-var text=document.getElementById("text");
-var Hp=[parseInt(charstatus[1]),parseInt(charstatus[0])*10+50];
-var PP=[18,15];
-var aware=false;
-const Choose=['','普通攻擊','防禦','回魔','法術攻擊'];
 function Decide(p1_choose){
     let p2_choose=GetRan(3);
     if(PP[0]<6){
@@ -160,10 +233,6 @@ function Animate2(p1,p2){
         setTimeout(function(){Battle(p1,p2);},2500);
     }
 }
-function GoE0(n){
-    if(n>0)return n;
-    else return 0;
-}
 function Battle(p1,p2){
     dice.style.display="none";
     player1_choose.style.display="none";
@@ -238,7 +307,7 @@ function Battle(p1,p2){
             text.innerHTML+="You Lose!";
             lose.style.display="";
             charstatus[1]='0';
-            localStorage.setItem(`yesa-${charchoose[0]}`,charstatus);
+            updateChar(charchoose[0],charstatus);
             back.style.display="";
         }else {
             text.innerHTML+="對手";
@@ -255,7 +324,6 @@ function Battle(p1,p2){
     }
 }
 
-var damage;
 function Reboot(){
     player1.style.backgroundImage=`url('../img/character/${charchoose[0]}/${charchoose[1]}.png')`;
     player2.style.backgroundImage=`url('enemy/enemy\ \(${charstatus[0]}\).png')`;
@@ -279,15 +347,6 @@ function Reboot(){
     player2_choose.style.display="none";
     DrawHpPP();
 }
-//start
-var start=document.getElementById("start");
-var dice=document.getElementById("dice");
-var player1_choose=document.getElementById("player1-choose");
-var player2_choose=document.getElementById("player2-choose");
-//screen
-var screen=document.getElementById("screen");
-var board=document.getElementById("board");
-var ctx=board.getContext('2d');
 function DrawHpPP(){
     var swid=screen.clientWidth;
     var shei=screen.clientHeight;
@@ -366,29 +425,6 @@ function RePlace(){
     player2.style.top=(shei-150)+'px';
     player2.style.left=(swid-70-swid/5)+'px';
 }
-window.onresize=()=>{
-    RePlace();
-}
-//load
-player1.style.display="none";
-player2.style.display="none";
-player1_choose.style.display="none";
-player2_choose.style.display="none";
-
-function LocalCheck(){
-    var localchoose=localStorage.getItem('yesa-choose');
-    if(localchoose){
-        return localchoose.split(',');
-    }else{
-        var tmp=['TokinoSora','1'];
-        localStorage.setItem('yesa-choose',tmp);
-        var localchar=localStorage.getItem('yesa-TokinoSora');
-        if(!localchar)localStorage.setItem('yesa-TokinoSora',[1,100,GetRan(10,20),GetRan(5,10),GetRan(10,20),GetRan(5,10)]);
-        var localitem=localStorage.getItem('yesa-item');
-        if(!localitem)localStorage.setItem('yesa-item',[0,0,0,0,0,0,0,0,0,0]);
-        return tmp;
-    }
-}
 
 function Start(){
     const loading=document.getElementById("loading");
@@ -397,23 +433,11 @@ function Start(){
     loading.onclick=function(){
         Reboot();
         RePlace();
-        DrawHpPP();
         PlayAudio();
+        localSet();
         loading.style.display='none';
         start.style.display="none";
         player1.style.display="";
         player2.style.display="";
     }
-}
-window.addEventListener("load",Start,false);
-
-function LvUp(){
-    charstatus[0]=parseInt(charstatus[0])+1;
-    charstatus[1]=parseInt(charstatus[1])+10;
-    for(var i=2;i<6;i++){
-        charstatus[i]=parseInt(charstatus[i])+GetRan(3)+parseInt(charitem[i+1]);
-    }
-    localStorage.setItem(`yesa-${charchoose[0]}`,charstatus);
-    charitem[0]=parseInt(charitem[0])+parseInt(charstatus[0])*100;
-    localStorage.setItem('yesa-item',charitem);
 }

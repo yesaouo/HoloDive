@@ -20,6 +20,7 @@
         }
         div{font-size:6em;}
         p{font-size: 0.2em;}
+        a{color:red;}
         font{font-weight: bold;font-size: 0.4em;cursor: pointer;}
         font:hover{color:#e76f51;}
         @media screen and (max-width: 560px){
@@ -29,6 +30,7 @@
     </style>
     <script>
         function Login(){
+            alert('')
             if(document.getElementById("acc").value==''||document.getElementById("pas").value==''){
                 alert('輸入帳號和密碼(注意:只能輸入數字、英文字母或者底線)');
             }else{
@@ -102,16 +104,17 @@
 </head>
 <body>
     <div>
-        <img src="img/others/login.png" height="70" width="70"><a>HoloDive</a>
+        <img src="img/others/login.png" height="70" width="70">HoloDive
         <form>
             <p>
                 <input id="acc" placeholder="Account" type="text" onkeyup="value=value.replace(/[^\w\.\/]/ig,'')">
                 <br><input id="pas" placeholder="Password" type="password">
                 <br>Sync:<label><input type="radio" id="local" name="contact">local</label>
                 <label><input type="radio" id="cloud" name="contact" checked>cloud</label>
+                <br><a>Make sure that there is only an account logged in on this device.</a>
             </p>
-            <font id="localbtn" color="#f4a261" onclick="SignUp();"><a>Sign up</a></font>&nbsp
-            <font id="loginbtn" color="#f4a261" onclick="Login();"><a>Sign in</a></font>
+            <font id="localbtn" color="#f4a261" onclick="SignUp();">Sign up</font>&nbsp
+            <font id="loginbtn" color="#f4a261" onclick="Login();">Sign in</font>
         </form>
     </div>
 </body>

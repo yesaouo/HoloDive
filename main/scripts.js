@@ -161,8 +161,8 @@ recover.onclick=function(){Shop(7);};
 relv.onclick=function(){Shop(8);};
 newchar.onclick=function(){Shop(9);};
 charaddexp.onclick=function(){
-    if(localStorage.getItem(`yesa-${iconselect}`)){
-        var userchar=getChar(iconselect);
+    var userchar=getChar(iconselect);
+    if(userchar!=undefined){
         if(parseInt(userchar[0])<50){
             var item=getItem();
             if(parseInt(item[6])>0){
@@ -174,8 +174,8 @@ charaddexp.onclick=function(){
     }else alert('角色尚未解鎖');
 };
 charrecover.onclick=function(){
-    if(localStorage.getItem(`yesa-${iconselect}`)){
-        var userchar=getChar(iconselect);
+    var userchar=getChar(iconselect);
+    if(userchar!=undefined){
         if(parseInt(userchar[1])<parseInt(userchar[0])*10+90){
             var item=getItem();
             if(parseInt(item[7])>0){
@@ -190,7 +190,7 @@ charrecover.onclick=function(){
 };
 charrelv.onclick=function(){
     var item=getItem();
-    if(localStorage.getItem(`yesa-${iconselect}`)){
+    if(getChar(iconselect)!=undefined){
         if(parseInt(item[8])>0){
             updateChar(iconselect);
             item[8]=parseInt(item[8])-1;
@@ -202,7 +202,7 @@ charrelv.onclick=function(){
 };
 charadd.onclick=function(){
     var item=getItem();
-    if(localStorage.getItem(`yesa-${iconselect}`)){
+    if(getChar(iconselect)!=undefined){
         alert('角色已解鎖');
     }else{
         if(parseInt(item[9])>0){

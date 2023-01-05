@@ -132,7 +132,7 @@ function LvUp(){
     charstatus[0]=parseInt(charstatus[0])+1;
     charstatus[1]=parseInt(charstatus[1])+10;
     for(let i=2;i<6;i++){
-        charstatus[i]=parseInt(charstatus[i])+GetRan(3)+parseInt(localItem[i+1]);
+        charstatus[i]=parseInt(charstatus[i])+GetRan(3)+parseInt(localItem[i]);
     }
     updateChar(charchoose[0],charstatus);
     localItem[0]=parseInt(localItem[0])+parseInt(charstatus[0])*100;

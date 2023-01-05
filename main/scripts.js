@@ -138,7 +138,7 @@ function LvUp(char){
     userchar[0]=parseInt(userchar[0])+1;
     userchar[1]=parseInt(userchar[1])+10;
     for(var i=2;i<6;i++){
-        userchar[i]=parseInt(userchar[i])+GetRan(3)+parseInt(useritem[i+1]);
+        userchar[i]=parseInt(userchar[i])+GetRan(3)+parseInt(useritem[i]);
     }
     stat.innerHTML=`等級: ${userchar[0]}<br>血量: ${userchar[1]}<br>攻擊: ${userchar[2]}<br>防禦: ${userchar[3]}<br>特攻: ${userchar[4]}<br>特防: ${userchar[5]}`;
     updateChar(iconselect,userchar);

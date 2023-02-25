@@ -79,7 +79,7 @@ app.get('/signup', async(req, res) => {
                 Account: acc,
                 Password: pas,
                 Name: name,
-                Photo: 'user.png',
+                Photo: 'https://yesaouo.github.io/TGDY/img/user.png',
                 Coin: 1000,
                 Diamond: 0,
                 HoloDive_Item: [0,0,0,0,0,0,0,1],

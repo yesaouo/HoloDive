@@ -55,56 +55,46 @@ var recbtn=document.getElementById("recbtn");
 var win=document.getElementById("win");
 var lose=document.getElementById("lose");
 var text=document.getElementById("text");
-var screen=document.getElementById("screen");
+var gameScreen=document.getElementById("game-screen");
 var board=document.getElementById("board");
 var ctx=board.getContext('2d');
-const Choose=['','普通攻擊','防禦','回魔','法術攻擊'];
-var choose=false,end=false;
-atkbtn.onclick=function(){
-    if(opponent){
-        socket.emit('choose',1,user[0].Cnt,team);
-        choose=true;
-        btnDisplay("none");
-    }else Decide(1);
-};
-stkbtn.onclick=function(){
-    if(opponent){
-        socket.emit('choose',4,user[0].Cnt,team);
-        choose=true;
-        btnDisplay("none");
-    }else Decide(4);
-};
-defbtn.onclick=function(){
-    if(opponent){
-        socket.emit('choose',2,user[0].Cnt,team); 
-        choose=true; 
-        btnDisplay("none");
-    }else Decide(2);
-};
-recbtn.onclick=function(){
-    if(opponent){
-        socket.emit('choose',3,user[0].Cnt,team); 
-        choose=true; 
-        btnDisplay("none");
-    }else Decide(3);
-};
 player1.style.display="none";
 player2.style.display="none";
 player1_choose.style.display="none";
 player2_choose.style.display="none";
+const Choose=['','普通攻擊','防禦','回魔','法術攻擊'];
+const acc = localStorage.getItem('tgdy-account');
+const pas = localStorage.getItem('tgdy-password');
+let choose = false, end = false, walletList = [], charList = [];
+let myId, team, opponent = false,  user = [];
+let name = localStorage.getItem('tgdy-name');
+let charChoose = localStorage.getItem('holodive-choose');
+
+
+function btnClick(n){
+    if(opponent){
+        socket.emit('choose', n, user[0].Cnt, team);
+        choose = true;
+        btnDisplay("none");
+    }else Decide(n);
+}
 function btnDisplay(d=""){
     atkbtn.style.display=d;
     stkbtn.style.display=d;
     defbtn.style.display=d;
     recbtn.style.display=d;
 }
+atkbtn.onclick=function(){ btnClick(1); };
+defbtn.onclick=function(){ btnClick(2); };
+recbtn.onclick=function(){ btnClick(3); };
+stkbtn.onclick=function(){ btnClick(4); };
+
 function GetRan(...num){
     if(num.length==1)return Math.floor(Math.random()*(num[0]))+1;
     if(num.length==2)return Math.floor(Math.random()*(num[1]-num[0]+1))+num[0];
 }
 function GoE0(n){
-    if(n>0)return n;
-    else return 0;
+    return (n>0)? n:0;
 }
 function Decide(p1){
     let p2=GetRan(3);
@@ -145,10 +135,10 @@ function Decide(p1){
     user[1].Choose=p2;
     text.innerHTML+=`<hr>${user[0].Name} 選擇了${Choose[p1]}<br>${user[1].Name} 選擇了${Choose[p2]}<br>`;
     ScrollText();
-    player1_choose.style.top=`${screen.clientHeight-150}px`;
+    player1_choose.style.top=`${gameScreen.clientHeight-150}px`;
     player1_choose.style.left=`${32}px`;
-    player2_choose.style.top=`${screen.clientHeight-150}px`;
-    player2_choose.style.left=`${screen.clientWidth-96}px`;
+    player2_choose.style.top=`${gameScreen.clientHeight-150}px`;
+    player2_choose.style.left=`${gameScreen.clientWidth-96}px`;
     if(user[0].Choose==1)player1_choose.style.backgroundImage="url('../img/others/atk.png')";
     if(user[0].Choose==2)player1_choose.style.backgroundImage="url('../img/others/def.png')";
     if(user[0].Choose==3)player1_choose.style.backgroundImage="url('../img/others/rec.png')";
@@ -277,85 +267,32 @@ function ScrollText() {
     let h = document.querySelector('#text');
     h.scrollTo(0, h.scrollHeight);
 }
-function localSet(){
-    let localobj=localStorage.getItem('yesa-HoloDive');
-    if(localobj){
-        localobj=JSON.parse(localobj);
-        localStorage.setItem('yesa-name',localobj.Name);
-        localStorage.setItem('yesa-item',localobj.Item);
-    }else{
-        alert('something went wrong');
-        window.location.href='../index.html';
-    }
-}
-function localUpdate(){
-    let localobj=localStorage.getItem('yesa-HoloDive');
-    if(localobj){
-        localobj=JSON.parse(localobj);
-        localobj.Name=localStorage.getItem('yesa-name');
-        localobj.Item=localStorage.getItem('yesa-item').split(',');
-        localStorage.setItem('yesa-HoloDive',JSON.stringify(localobj));
-        if(!localStorage.getItem('yesa-choose')){
-            alert('something went wrong');
-            window.location.href='../main/index.html';
-        }
-    }else{
-        alert('something went wrong');
-        window.location.href='../index.html';
-    }
-}
-function getItem(){
-    return localStorage.getItem('yesa-item').split(',');
-}
-function updateItem(item){
-    localStorage.setItem('yesa-item',item);
-    localUpdate();
-}
-function getChar(char){
-    let localobj=JSON.parse(localStorage.getItem('yesa-HoloDive'));
-    return localobj.Character[char];
-}
-function updateChar(char,userchar=[1,100,GetRan(10,20),GetRan(5,10),GetRan(10,20),GetRan(5,10)]){
-    let localobj=JSON.parse(localStorage.getItem('yesa-HoloDive'));
-    localobj.Character[char]=userchar;
-    console.log(char,localobj.Character[char])
-    localStorage.setItem('yesa-HoloDive',JSON.stringify(localobj));
-}
-function getChoose(){
-    return localStorage.getItem('yesa-choose').split(',');
-}
 function Battle(str,n){
     dice.style.display="none";
     player1_choose.style.display="none";
     player2_choose.style.display="none";
     text.innerHTML+=`擲骰中. 擲骰中.. 擲骰中...<br>你的點數是${user[0].Dice}，對手的點數是${user[1].Dice}<br>`;
-    if(n==0){
+    if(n==user[0].Id){
         end=true;
-        localitem=getItem();
-        localitem[1]=parseInt(localitem[1])+100;
-        updateItem(localitem);
-        howtoend.innerHTML='Click the cross to exit.';
-    }else if(n==user[0].Id){
         win.style.display="";
+        str += '<br>You Win!';
+        walletList[0] += 500;
+        walletList[1] += 10;
+        updateWallet();
+        howtoend.innerHTML = 'Click the cross to exit.';
+    }else if(n==0 || n==user[1].Id){
         end=true;
-        str+='<br>You Win!';
-        localitem=getItem();
-        localitem[1]=parseInt(localitem[1])+200;
-        updateItem(localitem);
-        howtoend.innerHTML='Click the cross to exit.';
-    }else if(n==user[1].Id){
         lose.style.display="";
-        end=true;
-        str+='<br>You Lose!';
-        howtoend.innerHTML='Click the cross to exit.';
+        str += (n==0)? '<br>Draw!' : '<br>You Lose!';
+        howtoend.innerHTML = 'Click the cross to exit.';
     }else btnDisplay();
     text.innerHTML+=str;
     ScrollText();
     DrawHpPP();
 }
 function DrawHpPP(){
-    var swid=screen.clientWidth;
-    var shei=screen.clientHeight;
+    var swid=gameScreen.clientWidth;
+    var shei=gameScreen.clientHeight;
     board.setAttribute("height",`${shei}px`);
     board.setAttribute("width",`${swid}px`);
     ctx.clearRect(0, 0, swid, 40);
@@ -422,8 +359,8 @@ function DrawHpPP(){
 }
 function RePlace(){
     DrawHpPP();
-    var swid=screen.clientWidth;
-    var shei=screen.clientHeight;
+    var swid=gameScreen.clientWidth;
+    var shei=gameScreen.clientHeight;
     music.style.top=(shei/7)+'px';
     music.style.left=(swid/2-50)+'px';
     player1.style.top=(shei-150)+'px';
@@ -444,10 +381,32 @@ function Reboot(){
     player2_choose.style.display="none";
     DrawHpPP();
 }
+async function getChar(char){
+    try {
+        const response = await fetch(`/getchar?acc=${acc}&pas=${pas}`);
+        return JSON.parse(await response.text())[char];
+    } catch (error) { getError(); }
+}
+async function getWalletList(){
+    try {
+        const response = await fetch(`/getwallet?acc=${acc}&pas=${pas}`);
+        let wallet = await response.text();
+        if(wallet){
+            wallet = JSON.parse(wallet);
+            wallet[0] = parseInt(wallet[0]);
+            wallet[1] = parseInt(wallet[1]);
+            return wallet;
+        }else getError();
+    } catch (error) { getError(); }
+}
+async function updateWallet(){
+    try {
+        const response = await fetch(`/updatewallet?acc=${acc}&pas=${pas}&coin=${walletList[0]}&diamond=${walletList[1]}`);
+    } catch (error) { getError(); }
+}
 function Start(){
     Reboot();
     RePlace();
-    localSet();
     player1.innerHTML=`<p>${user[0].Name}<p>`;
     player2.innerHTML=`<p>${user[1].Name}<p>`;
     loading.style.display='none';
@@ -456,18 +415,15 @@ function Start(){
     player2.style.display="";
     text.innerHTML=`你的對手是: ${user[1].Name}<br>使用的角色: ${user[1].Character.split(',')[0]} Lv: ${user[1].Lv}<br>`;
 }
-var myId,team,lchoose,opponent=false;
-var user=[],lchar=[];
+
 window.onresize=()=>{RePlace();};
 window.addEventListener("DOMContentLoaded", () => {
-    var name;
-    socket.on("connectioned", function(){
+    socket.on("connectioned", async function(){
         myId=socket.id;
         console.log(myId);
-        name=localStorage.getItem('yesa-name');
-        lchoose=localStorage.getItem('yesa-choose');
-        lchar=getChar(lchoose.split(',')[0]);
-        socket.emit("set",name,lchoose,lchar[0],lchar[2],lchar[3],lchar[4],lchar[5]);
+        charList = await getChar(charChoose.split(',')[0]);
+        walletList = await getWalletList();
+        socket.emit("set",name,charChoose,charList[0],charList[2],charList[3],charList[4],charList[5]);
         setTimeout(function(){
             if(!opponent)socket.emit("solo");
         },30000);
@@ -476,8 +432,8 @@ window.addEventListener("DOMContentLoaded", () => {
         alert('未匹配到合適對手，生成電腦與您戰鬥');
         user[0]=players;
         user[1]=Object.assign({},players);
-        user[1].Name='Yesa';
-        user[1].Id='Yesa';
+        user[1].Name='CPU';
+        user[1].Id='CPU';
         Start();
     });
     socket.on("newPlayer", function (players,battleId) {
@@ -507,7 +463,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 player1_choose.style.display="none";
                 player2_choose.style.display="none";
                 alert("對手已離線，正在為您重新匹配");
-                socket.emit("set",name,lchoose,lchar[0],lchar[2],lchar[3],lchar[4],lchar[5]);
+                socket.emit("set",name,charChoose,charList[0],charList[2],charList[3],charList[4],charList[5]);
             }
         }
     });
@@ -526,10 +482,10 @@ window.addEventListener("DOMContentLoaded", () => {
             }
             text.innerHTML+=`<hr>${user[0].Name} 選擇了${Choose[user[0].Choose]}<br>${user[1].Name} 選擇了${Choose[user[1].Choose]}<br>`;
             ScrollText();
-            player1_choose.style.top=`${screen.clientHeight-150}px`;
+            player1_choose.style.top=`${gameScreen.clientHeight-150}px`;
             player1_choose.style.left=`${32}px`;
-            player2_choose.style.top=`${screen.clientHeight-150}px`;
-            player2_choose.style.left=`${screen.clientWidth-96}px`;
+            player2_choose.style.top=`${gameScreen.clientHeight-150}px`;
+            player2_choose.style.left=`${gameScreen.clientWidth-96}px`;
             if(user[0].Choose==1)player1_choose.style.backgroundImage="url('../img/others/atk.png')";
             if(user[0].Choose==2)player1_choose.style.backgroundImage="url('../img/others/def.png')";
             if(user[0].Choose==3)player1_choose.style.backgroundImage="url('../img/others/rec.png')";

@@ -3,88 +3,146 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const PORT = process.env.PORT || 3000;
+const MongoClient= require('mongodb').MongoClient;
+const url= "mongodb+srv://yesa:A8746z@cluster0.uiviw1n.mongodb.net/?retryWrites=true&w=majority";
+const client = new MongoClient(url);
+
+async function insertUser(userObj) {
+    try {
+        const client = new MongoClient(url);
+        const database = client.db("TGDY");
+        const user = database.collection("user");
+        const result = await user.insertOne(userObj);
+        console.log(`A document was inserted with the _id: ${result.insertedId}`);
+    } finally {
+        await client.close();
+    }
+}
+async function getUser(acc,pas = null) {
+    try {
+        const client = new MongoClient(url);
+        const database = client.db("TGDY");
+        const user = database.collection("user");
+        let query = {};
+        if(pas == null) query = { Account: acc };
+        else query = { Account: acc, Password: pas };
+        return await user.findOne(query);
+    } finally {
+        await client.close();
+    }
+}
+async function updateUser(acc,pas,updateObj) {
+    try {
+        const client = new MongoClient(url);
+        const database = client.db("TGDY");
+        const user = database.collection("user");
+        const filter = { Account: acc, Password: pas };
+        const options = { upsert: false };
+        const updateDoc = { $set: updateObj };
+        const result = await user.updateOne(filter, updateDoc, options);
+        console.log(`${result.matchedCount} document(s) matched the filter, updated ${result.modifiedCount} document(s)`);
+    } finally {
+        await client.close();
+    }
+}
+
 app.use(express.static(__dirname));
 app.get('/', (req, res) => {
     res.sendFile( __dirname + '/index.html');
 });
-
-const MongoClient= require('mongodb').MongoClient;
-const url= "mongodb+srv://yesa:A8746z@cluster0.uiviw1n.mongodb.net/?retryWrites=true&w=majority";
-function mongonewUser(myobj){
-    MongoClient.connect(url, function(err, db) {
-        if(err) throw err;
-        const dbo= db.db("holodive");
-        dbo.collection("login").insertOne(myobj, function(err, res) {
-            if(err) throw err;
-            console.log("1 document inserted");
-            db.close();
-        });
-    });
-}
-app.get('/api/signin', (req, res) => {
-    let acc = req.query.acc;
-    let pas = req.query.pas;
-    let data = req.query.data;
-    if(data=="null"){
-        MongoClient.connect(url, function (err, db) {
-            if (err) throw err;
-            var dbo = db.db("holodive");
-            dbo.collection("login").find({Account: acc, Password: pas}).toArray(function (err, result) {
-                if (err) throw err;
-                if(result.length){
-                    console.log(result[0].Name+' login');
-                    res.send(result[0]);
-                }else{
-                    res.send("account or password incorrect");
-                }
-                db.close();
-            });
-        });
-    }else{
-        data = JSON.parse(data);
-        delete data._id;
-        MongoClient.connect(url, function (err, db) {
-            if (err) throw err;
-            const dbo = db.db("holodive");
-            const myquery = {Account: acc, Password: pas};
-            const newvalues = { $set: data };
-            dbo.collection("login").updateOne(myquery, newvalues, function (err, result) {
-                if (err) throw err;
-                console.log("1 document updated");
-                res.send(data);
-                db.close();
-            });
-        });
-    }
-});
-app.get('/api/signup', (req, res) => {
-    const acc = req.query.acc;
-    const pas = req.query.pas;
-    const name = req.query.name;
-    MongoClient.connect(url, function (err, db) {
-        if (err) throw err;
-        var dbo = db.db("holodive");
-        dbo.collection("login").find({Account: acc}).toArray(function (err, result) {
-            if (err) throw err;
-            if(result.length){
-                res.send("This account is already used.");
+app.get('/login', async(req, res) => {
+    try {
+        const acc = req.query.acc;
+        const pas = req.query.pas;
+        const user = await getUser(acc,pas);
+        if(user){
+            if('HoloDive_Item' in user && 'HoloDive_Character' in user){
+                console.log(user.Name+' login');
             }else{
-                const char={'TokinoSora':[1,100,GetRan(10,20),GetRan(5,10),GetRan(10,20),GetRan(5,10)]};
-                let newUser = {
-                    Account: acc,
-                    Password: pas,
-                    Name: name,
-                    Item: [1000,200,0,0,0,0,0,0,0,1],
-                    Character: char
-                }
-                mongonewUser(newUser);
-                res.send("registration success");
+                updateUser(acc,pas,{HoloDive_Item: [0,0,0,0,0,0,0,1], HoloDive_Character: {'TokinoSora': [1,100,GetRan(10,20),GetRan(5,10),GetRan(10,20),GetRan(5,10)]}});
             }
-            db.close();
-        });
-    });
-});   
-  
+            res.send(user);
+        }else{
+            res.send("Account or password incorrect");
+        }
+    } catch (error) {res.send("Error");}
+});
+app.get('/signup', async(req, res) => {
+    try {
+        const acc = req.query.acc;
+        const pas = req.query.pas;
+        const name = req.query.name;
+        if(await getUser(acc)){
+            res.send("This account is already used");
+        }else{
+            let newUser = {
+                Account: acc,
+                Password: pas,
+                Name: name,
+                Photo: 'user.png',
+                Coin: 1000,
+                Diamond: 0,
+                HoloDive_Item: [0,0,0,0,0,0,0,1],
+                HoloDive_Character: {'TokinoSora': [1,100,GetRan(10,20),GetRan(5,10),GetRan(10,20),GetRan(5,10)]}
+            }
+            insertUser(newUser);
+            res.send("Registration success");
+        }
+    } catch (error) {res.send("Error");}
+});
+app.get('/getwallet', async(req, res) => {
+    try {
+        const acc = req.query.acc;
+        const pas = req.query.pas;
+        const user = await getUser(acc,pas);
+        res.send((user)?[user.Coin,user.Diamond]:'');
+    } catch (error) {res.send('');}
+});
+app.get('/getitem', async(req, res) => {
+    try {
+        const acc = req.query.acc;
+        const pas = req.query.pas;
+        const user = await getUser(acc,pas);
+        res.send(user.HoloDive_Item);
+    } catch (error) {res.send('');}
+});
+app.get('/getchar', async(req, res) => {
+    try {
+        const acc = req.query.acc;
+        const pas = req.query.pas;
+        const user = await getUser(acc,pas);
+        res.send(user.HoloDive_Character);
+    } catch (error) {res.send('');}
+});
+app.get('/updatewallet', async(req, res) => {
+    try {
+        const acc = req.query.acc;
+        const pas = req.query.pas;
+        const coin = req.query.coin;
+        const diamond = req.query.diamond;
+        updateUser(acc,pas,{Coin: coin, Diamond: diamond});
+        res.send("Update success");
+    } catch (error) {res.send("Error");}
+});
+app.get('/updateitem', async(req, res) => {
+    try {
+        const acc = req.query.acc;
+        const pas = req.query.pas;
+        const data = req.query.data;
+        updateUser(acc,pas,{HoloDive_Item: data.split(',')});
+        res.send("Update success");
+    } catch (error) {res.send("Error");}
+});
+app.get('/updatechar', async(req, res) => {
+    try {
+        const acc = req.query.acc;
+        const pas = req.query.pas;
+        const data = req.query.data;
+        updateUser(acc,pas,{HoloDive_Character: JSON.parse(data)});
+        res.send("Update success");
+    } catch (error) {res.send("Error");}
+});
+
 server.listen(PORT, () => {
     console.log("Server Started. "+PORT);
 });
@@ -99,8 +157,7 @@ function GetRan(...num){
     if(num.length==2)return Math.floor(Math.random()*(num[1]-num[0]+1))+num[0];
 }
 function GoE0(n){
-    if(n>0)return n;
-    else return 0;
+    return (n>0)? n:0;
 }
 
 io.on('connection', (socket) => {

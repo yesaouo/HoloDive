@@ -17,104 +17,86 @@
             align-items: center;
             user-select: none;
             -webkit-user-select: none;
+            font-size:3em;
         }
-        div{font-size:6em;}
         p{font-size: 0.2em;}
-        a{color:red;}
-        font{font-weight: bold;font-size: 0.4em;cursor: pointer;}
+        a{color: #e63946;}
+        font{font-weight: bold;font-size: 0.4em;cursor: pointer;color: #f4a261;}
         font:hover{color:#e76f51;}
-        @media screen and (max-width: 560px){
-            div{font-size: 3em;}
-            img{height:35px;width:35px;}
-        }
     </style>
-    <script>
-        function Login(){
-            if(document.getElementById("acc").value==''||document.getElementById("pas").value==''){
-                alert('輸入帳號和密碼(注意:只能輸入數字、英文字母或者底線)');
-            }else{
-                const acc = document.getElementById("acc").value;
-                const pas = document.getElementById("pas").value;
-                localStorage.setItem('yesa-account',acc);
-                localStorage.setItem('yesa-password',pas);
-                if(document.getElementById("cloud").checked){
-                    getUser(acc,pas);
-                }else{
-                    data=getLocal();
-                    if(data){
-                        getUser(acc,pas,data);
-                    }else{
-                        alert('There is no data on the local side.');
-                    }
-                }                
-            }
-        }
-        function SignUp(){
-            name=Name();
-            if(document.getElementById("acc").value==''||document.getElementById("pas").value==''){
-                alert('輸入帳號和密碼(注意:只能輸入數字、英文字母或者底線)');
-            }else{
-                const acc = document.getElementById("acc").value;
-                const pas = document.getElementById("pas").value;
-                localStorage.setItem('yesa-account',acc);
-                localStorage.setItem('yesa-password',pas);
-                getName(acc,pas,name);
-            }
-        }
-        function Name(){
-            let name;
-            while(!name){
-                name=window.prompt('Enter your name.');
-            }
-            return name;
-        }
-        async function getUser(acc,pas,data=null) {
-            try {
-                const response = await fetch(`/api/signin?acc=${acc}&pas=${pas}&data=${data}`);
-                const user = await response.text();
-                if(user=="account or password incorrect"){
-                    alert(user);
-                }else{
-                    localStorage.setItem('yesa-HoloDive',user);
-                    window.location.href='main/index.html';
-                }
-            } catch (error) {console.error(error);}
-        }
-        async function getName(acc,pas,name) {
-            try {
-                const response = await fetch(`/api/signup?acc=${acc}&pas=${pas}&name=${name}`);
-                const user = await response.text();
-                alert(user);
-            } catch (error) {console.error(error);}
-        }
-        
-        function getLocal(){
-            var HoloDive=localStorage.getItem('yesa-HoloDive');
-            return HoloDive;
-        }
-        function Start(){
-            var localacc=localStorage.getItem('yesa-account');
-            if(localacc)document.getElementById("acc").value=localacc;
-            var localpas=localStorage.getItem('yesa-password');
-            if(localpas)document.getElementById("pas").value=localpas;
-        }
-        window.addEventListener("load",Start,false);
-    </script>
+    <script src="scripts.js"></script>
 </head>
 <body>
     <div>
-        <img src="img/others/login.png" height="70" width="70">HoloDive
+        <img src="img/others/login.png" height="35" width="35">HoloDive
         <form>
             <p>
                 <input id="acc" placeholder="Account" type="text" onkeyup="value=value.replace(/[^\w\.\/]/ig,'')">
-                <br><input id="pas" placeholder="Password" type="password">
-                <br>Sync:<label><input type="radio" id="local" name="contact">local</label>
-                <label><input type="radio" id="cloud" name="contact" checked>cloud</label>
-                <br><a>Make sure that there is only an account logged in on this device.</a>
+                <br><input id="pas" placeholder="Password" type="password"><br>
+                <a id="msg"><br></a>
             </p>
-            <font id="localbtn" color="#f4a261" onclick="SignUp();">Sign up</font>&nbsp
-            <font id="loginbtn" color="#f4a261" onclick="Login();">Sign in</font>
+            <font onclick="SignUp();">Sign up</font>&nbsp&nbsp<font onclick="LogIn();">Sign in</font>
         </form>
     </div>
+<script>
+const msg = document.getElementById('msg');
+function checkAccount(){
+  if(document.getElementById("acc").value==''||document.getElementById("pas").value==''){
+    dialogMsg.innerHTML =  'Enter account and password';
+    return false;
+  }else return true;
+}
+function getName(){
+  let name;
+  while(!name){
+    name=window.prompt('Enter your name');
+  }
+  return name;
+}
+async function LogIn(){
+  try {
+    if(checkAccount()){
+      const acc = document.getElementById("acc").value;
+      const pas = document.getElementById("pas").value;
+      localStorage.setItem('tgdy-account',acc);
+      localStorage.setItem('tgdy-password',pas);
+      const response = await fetch(`/login?acc=${acc}&pas=${pas}`);
+      let profile = await response.text();
+      try {
+        profile = JSON.parse(profile);
+        localStorage.setItem('tgdy-name',profile["Name"]);
+        alert(`Hello, ${profile["Name"]}!`);
+        window.location.href='main/index.html';
+      } catch (error) {
+        msg.innerHTML = "Account or password incorrect";
+      }
+    }
+  } catch (error) {msg.innerHTML = "Error";}
+}
+async function SignUp(){
+  try {
+    if(checkAccount()){
+      const name = getName();
+      const acc = document.getElementById("acc").value;
+      const pas = document.getElementById("pas").value;
+      localStorage.setItem('tgdy-account',acc);
+      localStorage.setItem('tgdy-password',pas);
+      const response = await fetch(`/signup?acc=${acc}&pas=${pas}&name=${name}`);
+      msg.innerHTML = await response.text();
+    }
+  } catch (error) {msg.innerHTML = "Error";}
+}
+
+function Start(){
+  const localacc=localStorage.getItem('tgdy-account');
+  const localpas=localStorage.getItem('tgdy-password');
+  if(localacc && localpas){
+    document.getElementById("acc").value=localacc;
+    document.getElementById("pas").value=localpas;
+    LogIn();
+  }
+}
+window.addEventListener("load",Start,false);
+</script>
 </body>
 </html>

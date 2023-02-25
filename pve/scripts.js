@@ -42,8 +42,8 @@ playbtn.onclick = function(event){
 
 var player1=document.getElementById("player1");
 var player2=document.getElementById("player2");
-var player1_choose=document.getElementById("player1-choose");
-var player2_choose=document.getElementById("player2-choose");
+var p1Choose=document.getElementById("player1-choose");
+var p2Choose=document.getElementById("player2-choose");
 var atkbtn=document.getElementById("atkbtn");
 var stkbtn=document.getElementById("stkbtn");
 var defbtn=document.getElementById("defbtn");
@@ -56,21 +56,19 @@ var lose=document.getElementById("lose");
 var text=document.getElementById("text");
 var start=document.getElementById("start");
 var dice=document.getElementById("dice");
-var screen=document.getElementById("screen");
+var gameScreen=document.getElementById("game-screen");
 var board=document.getElementById("board");
 var ctx=board.getContext('2d');
 const Choose=['','普通攻擊','防禦','回魔','法術攻擊'];
-let localobj=JSON.parse(localStorage.getItem('yesa-HoloDive'));
-let charchoose=getChoose();
-let charstatus=localobj.Character[charchoose[0]];
-let Hp=[],PP=[];
-let localItem=localStorage.getItem('yesa-item').split(',');
-let damage=[];
-let aware=false;
+let charChoose = localStorage.getItem('holodive-choose').split(',');
+let charObj, itemList, walletList, charList;
+let Hp = [], PP = [];
+let damage = [];
+let aware = false;
 player1.style.display="none";
 player2.style.display="none";
-player1_choose.style.display="none";
-player2_choose.style.display="none";
+p1Choose.style.display="none";
+p2Choose.style.display="none";
 atkbtn.onclick=function(){Decide(1);};
 stkbtn.onclick=function(){Decide(4);};
 defbtn.onclick=function(){Decide(2);};
@@ -80,66 +78,65 @@ next.onclick=function(){Reboot();};
 back.onclick=function(){Back();};
 window.onresize=()=>{RePlace();}
 window.addEventListener("load",Start,false);
+const acc = localStorage.getItem('tgdy-account');
+const pas = localStorage.getItem('tgdy-password');
 
-function localSet(){
-    let localobj=localStorage.getItem('yesa-HoloDive');
-    if(localobj){
-        localobj=JSON.parse(localobj);
-        localStorage.setItem('yesa-name',localobj.Name);
-        localStorage.setItem('yesa-item',localobj.Item);
-    }else{
-        alert('something went wrong');
-        window.location.href='../index.html';
+function getError(){
+    alert('connection error');
+    window.location.href='../index.html';
+}
+function arrayToInt(strArray){
+    for(let i=0; i<strArray.length; i++){
+        strArray[i] = parseInt(strArray[i]);
     }
+    return strArray;
 }
-function localUpdate(){
-    let localobj=localStorage.getItem('yesa-HoloDive');
-    if(localobj){
-        localobj=JSON.parse(localobj);
-        localobj.Name=localStorage.getItem('yesa-name');
-        localobj.Item=localStorage.getItem('yesa-item').split(',');
-        localStorage.setItem('yesa-HoloDive',JSON.stringify(localobj));
-        if(!localStorage.getItem('yesa-choose')){
-            alert('something went wrong');
-            window.location.href='../main/index.html';
-        }
-    }else{
-        alert('something went wrong');
-        window.location.href='../index.html';
-    }
+async function getItemList(){
+    try {
+        const response = await fetch(`/getitem?acc=${acc}&pas=${pas}`);
+        return arrayToInt(JSON.parse(await response.text()));
+    } catch (error) { getError(); }
 }
-function getItem(){
-    return localStorage.getItem('yesa-item').split(',');
+async function getCharObj(){
+    try {
+        const response = await fetch(`/getchar?acc=${acc}&pas=${pas}`);
+        return JSON.parse(await response.text());
+    } catch (error) { getError(); }
 }
-function updateItem(item){
-    localStorage.setItem('yesa-item',item);
-    localUpdate();
+async function getWalletList(){
+    try {
+        const response = await fetch(`/getwallet?acc=${acc}&pas=${pas}`);
+        let wallet = await response.text();
+        if(wallet){
+            wallet = JSON.parse(wallet);
+            wallet[0] = parseInt(wallet[0]);
+            wallet[1] = parseInt(wallet[1]);
+            return wallet;
+        }else getError();
+    } catch (error) { getError(); }
 }
-function getChar(char){
-    let localobj=JSON.parse(localStorage.getItem('yesa-HoloDive'));
-    return localobj.Character[char];
+async function updateChar(){
+    try {
+        charObj[charChoose[0]] = charList;
+        const response = await fetch(`/updatechar?acc=${acc}&pas=${pas}&data=${JSON.stringify(charObj)}`);
+    } catch (error) { getError(); }
 }
-function updateChar(char,userchar=[1,100,GetRan(10,20),GetRan(5,10),GetRan(10,20),GetRan(5,10)]){
-    let localobj=JSON.parse(localStorage.getItem('yesa-HoloDive'));
-    localobj.Character[char]=userchar;
-    console.log(char,localobj.Character[char])
-    localStorage.setItem('yesa-HoloDive',JSON.stringify(localobj));
+async function updateWallet(){
+    try {
+        const response = await fetch(`/updatewallet?acc=${acc}&pas=${pas}&coin=${walletList[0]}&diamond=${walletList[1]}`);
+    } catch (error) { getError(); }
 }
-function getChoose(){
-    return localStorage.getItem('yesa-choose').split(',');
-}
+
 function LvUp(){
-    charstatus[0]=parseInt(charstatus[0])+1;
-    charstatus[1]=parseInt(charstatus[1])+10;
-    for(let i=2;i<6;i++){
-        charstatus[i]=parseInt(charstatus[i])+GetRan(3)+parseInt(localItem[i]);
-    }
-    updateChar(charchoose[0],charstatus);
-    localItem[0]=parseInt(localItem[0])+parseInt(charstatus[0])*100;
-    updateItem(localItem);
+    charList[0] += 1;
+    charList[1] += 10;
+    walletList[0] += charList[0] * 100;
+    for(let i=2;i<6;i++) charList[i] += GetRan(3) + itemList[i - 2];
+    updateChar();
+    updateWallet();
 }
 function Back(){
-    updateChar(charchoose[0],charstatus);
+    updateChar();
     window.location.href='../main/index.html';
 }
 function GetRan(...num){
@@ -147,7 +144,7 @@ function GetRan(...num){
     if(num.length==2)return Math.floor(Math.random()*(num[1]-num[0]+1))+num[0];
 }
 function GoE0(n){
-    return (n>0)?n:0;
+    return (n>0)? n:0;
 }
 
 function Decide(p1_choose){
@@ -185,48 +182,48 @@ function Decide(p1_choose){
         }
     }
     if(p2_choose==1){
-        if(parseInt(charstatus[5])-damage[3]>parseInt(charstatus[3])-damage[1])p2_choose=4;
+        if(charList[5]-damage[3]>charList[3]-damage[1])p2_choose=4;
         if(aware&&damage[3]<damage[1])p2_choose=4;
         aware=true;
     }
     text.innerHTML=`你選擇${Choose[p1_choose]}，對手選擇${Choose[p2_choose]}`;
-    player1_choose.style.top=`${screen.clientHeight-150}px`;
-    player1_choose.style.left=`${32}px`;
-    player2_choose.style.top=`${screen.clientHeight-150}px`;
-    player2_choose.style.left=`${screen.clientWidth-96}px`;
+    p1Choose.style.top=`${gameScreen.clientHeight-150}px`;
+    p1Choose.style.left=`${32}px`;
+    p2Choose.style.top=`${gameScreen.clientHeight-150}px`;
+    p2Choose.style.left=`${gameScreen.clientWidth-96}px`;
     if(p1_choose==1){
-        player1_choose.style.backgroundImage="url('../img/others/atk.png')";
+        p1Choose.style.backgroundImage="url('../img/others/atk.png')";
     }else if(p1_choose==2){
-        player1_choose.style.backgroundImage="url('../img/others/def.png')";
+        p1Choose.style.backgroundImage="url('../img/others/def.png')";
     }else if(p1_choose==3){
-        player1_choose.style.backgroundImage="url('../img/others/rec.png')";
+        p1Choose.style.backgroundImage="url('../img/others/rec.png')";
     }else if(p1_choose==4){
-        player1_choose.style.backgroundImage="url('../img/others/stk.png')";
+        p1Choose.style.backgroundImage="url('../img/others/stk.png')";
     }
-    if(p2_choose==1)player2_choose.style.backgroundImage="url('../img/others/atk.png')";
-    if(p2_choose==2)player2_choose.style.backgroundImage="url('../img/others/def.png')";
-    if(p2_choose==3)player2_choose.style.backgroundImage="url('../img/others/rec.png')";
-    if(p2_choose==4)player2_choose.style.backgroundImage="url('../img/others/stk.png')";
-    player1_choose.style.display="";
-    player2_choose.style.display="";
+    if(p2_choose==1)p2Choose.style.backgroundImage="url('../img/others/atk.png')";
+    if(p2_choose==2)p2Choose.style.backgroundImage="url('../img/others/def.png')";
+    if(p2_choose==3)p2Choose.style.backgroundImage="url('../img/others/rec.png')";
+    if(p2_choose==4)p2Choose.style.backgroundImage="url('../img/others/stk.png')";
+    p1Choose.style.display="";
+    p2Choose.style.display="";
     Animate(p1_choose,p2_choose);
 }
 function Animate(p1,p2){
-    let p1x=parseInt(player1_choose.style.left.replace('px',''));
-    let p2x=parseInt(player2_choose.style.left.replace('px',''));
+    let p1x=parseInt(p1Choose.style.left.replace('px',''));
+    let p2x=parseInt(p2Choose.style.left.replace('px',''));
     if(p2x-p1x<50)Animate2(p1,p2);
     else{
-        player1_choose.style.left=`${p1x+1}px`;
-        player2_choose.style.left=`${p2x-1}px`;
+        p1Choose.style.left=`${p1x+1}px`;
+        p2Choose.style.left=`${p2x-1}px`;
         setTimeout(function(){Animate(p1,p2)},1);
     }
 }
 function Animate2(p1,p2){
-    let p1x=parseInt(player1_choose.style.left.replace('px',''));
-    let p2x=parseInt(player2_choose.style.left.replace('px',''));
+    let p1x=parseInt(p1Choose.style.left.replace('px',''));
+    let p2x=parseInt(p2Choose.style.left.replace('px',''));
     if(p2x-p1x<200){
-        player1_choose.style.left=`${p1x-5}px`;
-        player2_choose.style.left=`${p2x+5}px`;
+        p1Choose.style.left=`${p1x-5}px`;
+        p2Choose.style.left=`${p2x+5}px`;
         setTimeout(function(){Animate2(p1,p2)},2);
     }else{
         dice.style.display="";
@@ -235,8 +232,8 @@ function Animate2(p1,p2){
 }
 function Battle(p1,p2){
     dice.style.display="none";
-    player1_choose.style.display="none";
-    player2_choose.style.display="none";
+    p1Choose.style.display="none";
+    p2Choose.style.display="none";
     let result1=0,result2=0;
     const dice1=GetRan(6),dice2=GetRan(6);
     text.innerHTML+=`<br>擲骰中. 擲骰中.. 擲骰中...<br>你的點數是${dice1}，對手的點數是${dice2}<br>`;
@@ -288,7 +285,7 @@ function Battle(p1,p2){
         text.innerHTML+=`對手對你造成了${result1}點傷害，你回復了${dice1}點能量`; 
         PP[0]+=dice1*2;
     }
-    Hp[0]-=result1; Hp[1]-=result2; PP[0]-=dice1; PP[1]-=dice2; charstatus[1]=Hp[0];
+    Hp[0]-=result1; Hp[1]-=result2; PP[0]-=dice1; PP[1]-=dice2; charList[1]=Hp[0];
     if(Hp[0]>0&&Hp[1]>0&&PP[0]>=0&&PP[1]>=0){
         text.innerHTML+=`<br>你現在有${Hp[0]}點血量，${PP[0]}點能量<br>對手現在有${Hp[1]}點血量，${PP[1]}點能量`;
         DrawHpPP();
@@ -298,16 +295,16 @@ function Battle(p1,p2){
         defbtn.style.display="none";
         recbtn.style.display="none";
         bakbtn.style.display="none";
-        player1_choose.style.display="none";
-        player2_choose.style.display="none";
+        p1Choose.style.display="none";
+        p2Choose.style.display="none";
         text.innerHTML+="<br>";
         if(Hp[0]<=0||PP[0]<0){
             if(Hp[0]<=0)text.innerHTML+="血量歸零,";
             if(PP[0]<0)text.innerHTML+="魔力枯竭,";
             text.innerHTML+="You Lose!";
             lose.style.display="";
-            charstatus[1]='0';
-            updateChar(charchoose[0],charstatus);
+            charList[1]=0;
+            updateChar();
             back.style.display="";
         }else {
             text.innerHTML+="對手";
@@ -315,7 +312,7 @@ function Battle(p1,p2){
             if(PP[1]<0)text.innerHTML+="魔力枯竭,";
             text.innerHTML+="You Win!";
             win.style.display="";
-            if(parseInt(charstatus[0])<185){
+            if(charList[0]<185){
                 LvUp();
                 next.style.display="";
                 back.style.display="";
@@ -325,12 +322,11 @@ function Battle(p1,p2){
 }
 
 function Reboot(){
-    player1.style.backgroundImage=`url('../img/character/${charchoose[0]}/${charchoose[1]}.png')`;
-    player2.style.backgroundImage=`url('enemy/enemy\ \(${charstatus[0]}\).png')`;
-    const lv=parseInt(charstatus[0]);
-    damage=[parseInt(charstatus[2])-lv*GetRan(1,4),parseInt(charstatus[3])-lv*GetRan(1,4),parseInt(charstatus[4])-lv*GetRan(1,4),parseInt(charstatus[5])-lv*GetRan(1,4)];
-    Hp[0]=parseInt(charstatus[1]);
-    Hp[1]=parseInt(lv*10+50);
+    player1.style.backgroundImage=`url('../img/character/${charChoose[0]}/${charChoose[1]}.png')`;
+    player2.style.backgroundImage=`url('enemy/enemy\ \(${charList[0]}\).png')`;
+    damage=[charList[2]-charList[0]*GetRan(1,4),charList[3]-charList[0]*GetRan(1,4),charList[4]-charList[0]*GetRan(1,4),charList[5]-charList[0]*GetRan(1,4)];
+    Hp[0]=charList[1];
+    Hp[1]=charList[0]*10+50;
     PP=[18,15];
     text.innerHTML="";
     atkbtn.style.display="";
@@ -343,13 +339,13 @@ function Reboot(){
     dice.style.display="none";
     next.style.display="none";
     back.style.display="none";
-    player1_choose.style.display="none";
-    player2_choose.style.display="none";
+    p1Choose.style.display="none";
+    p2Choose.style.display="none";
     DrawHpPP();
 }
 function DrawHpPP(){
-    var swid=screen.clientWidth;
-    var shei=screen.clientHeight;
+    let swid=gameScreen.clientWidth;
+    let shei=gameScreen.clientHeight;
     board.setAttribute("height",`${shei}px`);
     board.setAttribute("width",`${swid}px`);
     ctx.clearRect(0, 0, swid, 40);
@@ -416,8 +412,8 @@ function DrawHpPP(){
 }
 function RePlace(){
     DrawHpPP();
-    var swid=screen.clientWidth;
-    var shei=screen.clientHeight;
+    let swid=gameScreen.clientWidth;
+    let shei=gameScreen.clientHeight;
     music.style.top=(shei/7)+'px';
     music.style.left=(swid/2-50)+'px';
     player1.style.top=(shei-150)+'px';
@@ -426,7 +422,11 @@ function RePlace(){
     player2.style.left=(swid-70-swid/5)+'px';
 }
 
-function Start(){
+async function Start(){
+    charObj = await getCharObj();
+    charList = charObj[charChoose[0]];
+    itemList = await getItemList();
+    walletList = await getWalletList();
     const loading=document.getElementById("loading");
     loading.style.backgroundImage='none';
     loading.innerHTML='Click anywere to enter the game.';
@@ -434,7 +434,6 @@ function Start(){
         Reboot();
         RePlace();
         PlayAudio();
-        localSet();
         loading.style.display='none';
         start.style.display="none";
         player1.style.display="";

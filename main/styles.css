@@ -66,22 +66,7 @@ iframe{
 }
 .middle{
     max-width: 960px;
-}
-.link{
-    text-decoration: none;
-    color: white;
-    display: inline-block;
-    cursor: pointer;
-}
-.link img{
-    position: relative;
-    height: 20px; width: 20px;
-    top: 4px;
-}
-.link:hover{
-    font-weight: bold;
-    color: navy;
-    background-color: #457B9D;
+    font-size: 24px;
 }
 dialog{
     user-select: none;
@@ -111,3 +96,38 @@ dialog::backdrop{
 #addexp{background-image: url("../img/shop/exp.png");}
 #relv{background-image: url("../img/shop/re.png");}
 #newchar{background-image: url("../img/shop/new.png");}
+
+nav{
+    font-weight: bold;
+    text-decoration: none;
+    color: white;
+    display: inline-block;
+    width: 5em;
+    cursor: pointer;
+}
+nav img{
+    position: relative;
+    height: 24px; width: 24px;
+    top: 4px;
+}
+nav:hover{
+    font-weight: bold;
+    color: navy;
+    background-color: #457B9D;
+}
+nav ul{
+    z-index: 100;
+    display: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+}
+nav:hover ul{ display: block; }
+nav ul li{
+    border-top: 2px solid #1D3557;
+    background-color: white;
+    width: 5em;
+    color: black;
+}
+nav ul li:hover{ background-color: PowderBlue; }

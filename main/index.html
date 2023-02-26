@@ -19,56 +19,68 @@
             <dialog id="dialogshop">
                 Shop<br><br><br>
                 <div id="shopitem">
-                    <div id="addatk"></div>
-                    <div id="adddef"></div>
-                    <div id="addstk"></div>
-                    <div id="addsdf"></div>
+                    <div id="addatk" onclick="Shop(0)"></div>
+                    <div id="adddef" onclick="Shop(1)"></div>
+                    <div id="addstk" onclick="Shop(2)"></div>
+                    <div id="addsdf" onclick="Shop(3)"></div>
                 </div><br>
                 <div id="shopitem">
-                    <div id="addexp"></div>
-                    <div id="recover"></div>
-                    <div id="relv"></div>
-                    <div id="newchar"></div>
+                    <div id="addexp" onclick="Shop(4)"></div>
+                    <div id="recover" onclick="Shop(5)"></div>
+                    <div id="relv" onclick="Shop(6)"></div>
+                    <div id="newchar" onclick="Shop(7)"></div>
                 </div><br>
                 <img src="../img/shop/coin.png" height="32px" width="32px"><a id="coin"></a>
-                <img src="../img/shop/diamond.png" height="32px" width="32px"><a id ="diamond"></a>
-                <br><br><button id="cancelshop">Cancel</button>
+                <img src="../img/shop/diamond.png" height="32px" width="32px"><a id ="diamond"></a><br><br>
+                <button onclick="cancelShop()">Cancel</button>
             </dialog>
-            <div class="link" id="shop">
-                <img src="../img/icon/hololive.png" id="shop">查看商店
-            </div>
-            <div class="link" id="pve">
-                <img src="../img/icon/hololive.png" id="pve">主線關卡
-            </div>
-            <div class="link" id="pvp">
-                <img src="../img/icon/hololive.png" id="pvp">連線對戰
-            </div>
-            <div class="link" id="musicdex">
-                <img src="../img/icon/hololive.png" id="musicdex">Musicdex
-            </div>
+
+            <nav><img src="../img/icon/hololive.png" id="shop-btn" alt="hololive-icon">商店
+                <ul>
+                    <li><a onclick="Shop()">購買道具</a></li>
+                    <li><a onclick="WaitForUpdate()">轉蛋抽卡</a></li>
+                </ul>
+            </nav>
+            <nav><img src="../img/icon/hololive.png" id="adventure-btn" alt="hololive-icon">冒險
+                <ul>
+                   <li><a onclick="Pve()">主線冒險</a></li>
+                   <li><a onclick="Pvp()">隨機配對</a></li>
+                   <li><a onclick="WaitForUpdate()">積分挑戰</a></li>
+                   <li><a onclick="WaitForUpdate()">創建房間</a></li>
+                </ul>
+            </nav>
+            <nav><img src="../img/icon/hololive.png" id="menu-btn" alt="hololive-icon">選單
+                <ul>
+                    <li><a onclick="WaitForUpdate()">帳號綁定</a></li>
+                    <li><a onclick="LogOut()">帳號登出</a></li>
+                    <li><a onclick="WaitForUpdate()">遊戲介紹</a></li>
+                    <li><a onclick="WaitForUpdate()">關於作者</a></li>
+                    <li><a onclick="Musicdex()">Musicdex</a></li>
+                </ul>
+            </nav>
         </div>
     
         <div class="down">
             <dialog id="dialogchar">
                 <div id="dialogtext"></div>
-                <button id="charaddexp">提升等級</button>
-                <button id="charrecover">回復血量</button>
-                <button id="charrelv">重置等級</button>
-                <button id="charadd">解鎖角色</button>
-                <button id="cancelchar">返回遊戲</button>
+                <button onclick="charAddExp()">提升等級</button>
+                <button onclick="charReCover()">回復血量</button>
+                <button onclick="charReLv()">重置等級</button>
+                <button onclick="charAdd()">解鎖角色</button>
+                <button onclick="cancelChar()">返回遊戲</button>
             </dialog>
-            <img src="../img/icon/Tokino_Sora_-_Main_Page_Icon.png" class="icon" id="TokinoSora">
-            <img src="../img/icon/Hakui_Koyori_-_Main_Page_Icon.png" class="icon" id="HakuiKoyori">
-            <img src="../img/icon/Hoshimachi_Suisei_-_Main_Page_Icon.png" class="icon" id="HoshimachiSuisei">
-            <img src="../img/icon/Houshou_Marine_-_Main_Page_Icon.png" class="icon" id="HoushouMarine">
-            <img src="../img/icon/Minato_Aqua_-_Main_Page_Icon.png" class="icon" id="MinatoAqua">
-            <img src="../img/icon/Nakiri_Ayame_-_Main_Page_Icon.png" class="icon" id="NakiriAyame">
-            <img src="../img/icon/Sakura_Miko_-_Main_Page_Icon.png" class="icon" id="SakuraMiko">
-            <img src="../img/icon/Shirakami_Fubuki_-_Main_Page_Icon.png" class="icon" id="ShirakamiFubuki">
-            <img src="../img/icon/Tokoyami_Towa_-_Main_Page_Icon.png" class="icon" id="TokoyamiTowa">
-            <img src="../img/icon/Tsunomaki_Watame_-_Main_Page_Icon.png" class="icon" id="TsunomakiWatame">
-            <img src="../img/icon/Usada_Pekora_-_Main_Page_Icon.png" class="icon" id="UsadaPekora">
-            <img src="../img/icon/Yukihana_Lamy_-_Main_Page_Icon.png" class="icon" id="YukihanaLamy">
+            <img src="../img/icon/Tokino_Sora_-_Main_Page_Icon.png" class="icon" id="TokinoSora" alt="TokinoSora">
+            <img src="../img/icon/Hakui_Koyori_-_Main_Page_Icon.png" class="icon" id="HakuiKoyori" alt="HakuiKoyori">
+            <img src="../img/icon/Hoshimachi_Suisei_-_Main_Page_Icon.png" class="icon" id="HoshimachiSuisei" alt="HoshimachiSuisei">
+            <img src="../img/icon/Houshou_Marine_-_Main_Page_Icon.png" class="icon" id="HoushouMarine" alt="HoushouMarine">
+            <img src="../img/icon/Minato_Aqua_-_Main_Page_Icon.png" class="icon" id="MinatoAqua" alt="MinatoAqua">
+            <img src="../img/icon/Nakiri_Ayame_-_Main_Page_Icon.png" class="icon" id="NakiriAyame" alt="NakiriAyame">
+            <img src="../img/icon/Sakura_Miko_-_Main_Page_Icon.png" class="icon" id="SakuraMiko" alt="SakuraMiko">
+            <img src="../img/icon/Shirakami_Fubuki_-_Main_Page_Icon.png" class="icon" id="ShirakamiFubuki" alt="ShirakamiFubuki">
+            <img src="../img/icon/Tokoyami_Towa_-_Main_Page_Icon.png" class="icon" id="TokoyamiTowa" alt="TokoyamiTowa">
+            <img src="../img/icon/Tsunomaki_Watame_-_Main_Page_Icon.png" class="icon" id="TsunomakiWatame" alt="TsunomakiWatame">
+            <img src="../img/icon/Usada_Pekora_-_Main_Page_Icon.png" class="icon" id="UsadaPekora" alt="UsadaPekora">
+            <img src="../img/icon/Yukihana_Lamy_-_Main_Page_Icon.png" class="icon" id="YukihanaLamy" alt="YukihanaLamy">
         </div>
     </div>
     <div id="right"></div>

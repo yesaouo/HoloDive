@@ -74,9 +74,76 @@ function updateStatus(){
     let char = charObj[iconSelect];
     stat.innerHTML=`等級: ${char[0]}<br>血量: ${char[1]}<br>攻擊: ${char[2]}<br>防禦: ${char[3]}<br>特攻: ${char[4]}<br>特防: ${char[5]}`;
 }
-function Shop(n=-1){
-    let trade = false;
-    if(n!=-1){
+
+function LvUp(charName){
+    let char = charObj[charName];
+    char[0] += 1;
+    char[1] += 10;
+    for(let i = 2;i < 6;i++){ char[i] += GetRan(3) + itemList[i - 2]; };
+    stat.innerHTML=`等級: ${char[0]}<br>血量: ${char[1]}<br>攻擊: ${char[2]}<br>防禦: ${char[3]}<br>特攻: ${char[4]}<br>特防: ${char[5]}`;
+    updateChar(iconSelect, char);
+    alert('等級提升');   
+}
+function checkHp(){
+    const char = charObj[charSelect];
+    if(char[1] > 0){
+        window.location.href='../pve/index.html'; 
+    }else alert('請先恢復角色血量');
+}
+
+function updateChoose(){
+    localStorage.setItem('holodive-choose',[charSelect,picTime]);
+}
+
+document.onclick=function(e){
+    const e_t_i = e.target.id;
+    if((e_t_i == 'screen')||Object.keys(charDict).includes(e_t_i)){
+        if(e_t_i == 'screen'){
+            picTime++;
+            if(picTime>charDict[charSelect])picTime=1;
+            updateChoose();
+            document.getElementById('screen').style.backgroundImage=`url("../img/character/${charSelect}/${picTime}.png")`;
+        }else if(document.getElementById(e_t_i).style.filter!='brightness(50%)'){
+            document.getElementById(charSelect).style.border='';
+            charSelect=e_t_i;
+            iconSelect=charSelect;
+            document.getElementById(e_t_i).style.border='5px solid greenyellow';
+            document.getElementById('screen').style.backgroundImage=`url("../img/character/${charSelect}/1.png")`;
+            dialogtext.innerHTML=iconSelect;
+            dialogchar.showModal();
+            picTime=1;
+            updateChoose();
+            updateStatus();
+        }else{
+            iconSelect=e_t_i;
+            dialogtext.innerHTML=iconSelect;
+            dialogchar.showModal();
+        }
+    }
+}
+
+async function Start(){
+    charObj = await getCharObj();
+    itemList = await getItemList();
+    walletList = await getWalletList();
+    picTime = 1;
+    charSelect = 'TokinoSora';
+    iconSelect = charSelect;
+    updateChoose();
+    updateStatus();
+    displayChar();
+    document.getElementById(charSelect).style.border='5px solid greenyellow';
+    document.getElementById('screen').style.backgroundImage=`url("../img/character/${charSelect}/1.png")`;
+}
+window.addEventListener("load",Start,false);
+
+
+
+function Shop(n =- 1){
+    if(n == -1){
+        dialogshop.showModal();
+    }else{
+        let trade = false;
         if(n > -1 && n < 4){
             if(walletList[0] >= 500 * (itemList[n] + 1)){
                 walletList[0] -= 500 * (itemList[n] + 1);
@@ -103,12 +170,12 @@ function Shop(n=-1){
                 trade = true;
             }else alert(`還缺少${25 - walletList[1]}鑽`);
         }
-    }
-    if(trade){
-        itemList[n] += 1;
-        updateWallet(walletList);
-        updateItem(itemList);
-        alert('購買成功');
+        if(trade){
+            itemList[n] += 1;
+            updateWallet(walletList);
+            updateItem(itemList);
+            alert('購買成功');
+        }
     }
     document.getElementById('coin').innerHTML = walletList[0];
     document.getElementById('diamond').innerHTML = walletList[1];
@@ -121,20 +188,22 @@ function Shop(n=-1){
     document.getElementById('relv').innerHTML = '<br><br>'+ itemList[6];
     document.getElementById('newchar').innerHTML = '<br><br>'+ itemList[7];
 }
-function LvUp(charName){
-    let char = charObj[charName];
-    char[0] += 1;
-    char[1] += 10;
-    for(let i = 2;i < 6;i++){ char[i] += GetRan(3) + itemList[i - 2]; };
-    stat.innerHTML=`等級: ${char[0]}<br>血量: ${char[1]}<br>攻擊: ${char[2]}<br>防禦: ${char[3]}<br>特攻: ${char[4]}<br>特防: ${char[5]}`;
-    updateChar(iconSelect, char);
-    alert('等級提升');   
-}
-function checkHp(){
+function Pve(){
     const char = charObj[charSelect];
     if(char[1] > 0){
         window.location.href='../pve/index.html'; 
     }else alert('請先恢復角色血量');
+}
+function Pvp(){
+    window.location.href='../pvp/split.html';
+}
+function LogOut(){
+    localStorage.removeItem('tgdy-account');
+    localStorage.removeItem('tgdy-password');
+    window.location.href='../index.html';
+}
+function WaitForUpdate(){
+    alert('此功能將於3.0版本中推出');
 }
 function charAddExp(){
     let char = charObj[iconSelect];
@@ -189,94 +258,19 @@ function charAdd(){
         }
     }
 }
-function updateChoose(){
-    localStorage.setItem('holodive-choose',[charSelect,picTime]);
+function cancelShop(){
+    dialogshop.close();
 }
-
-document.onclick=function(e){
-    const e_t_i = e.target.id;
-    if((e_t_i == 'screen')||Object.keys(charDict).includes(e_t_i)){
-        if(e_t_i == 'screen'){
-            picTime++;
-            if(picTime>charDict[charSelect])picTime=1;
-            updateChoose();
-            document.getElementById('screen').style.backgroundImage=`url("../img/character/${charSelect}/${picTime}.png")`;
-        }else if(document.getElementById(e_t_i).style.filter!='brightness(50%)'){
-            document.getElementById(charSelect).style.border='';
-            charSelect=e_t_i;
-            iconSelect=charSelect;
-            document.getElementById(e_t_i).style.border='5px solid greenyellow';
-            document.getElementById('screen').style.backgroundImage=`url("../img/character/${charSelect}/1.png")`;
-            dialogtext.innerHTML=iconSelect;
-            dialogchar.showModal();
-            picTime=1;
-            updateChoose();
-            updateStatus();
-        }else{
-            iconSelect=e_t_i;
-            dialogtext.innerHTML=iconSelect;
-            dialogchar.showModal();
-        }
-    }
-
-    if(e_t_i == 'shop'){
-        Shop();
-        dialogshop.showModal();
-    }else if(e_t_i == 'cancelshop'){
-        dialogshop.close();
-    }else if(e_t_i == 'cancelchar'){
-        dialogchar.close();
-    }else if(e_t_i == 'addatk'){
-        Shop(0);
-    }else if(e_t_i == 'adddef'){
-        Shop(1);
-    }else if(e_t_i == 'addstk'){
-        Shop(2);
-    }else if(e_t_i == 'addsdf'){
-        Shop(3);
-    }else if(e_t_i == 'addexp'){
-        Shop(4);
-    }else if(e_t_i == 'recover'){
-        Shop(5);
-    }else if(e_t_i == 'relv'){
-        Shop(6);
-    }else if(e_t_i == 'newchar'){
-        Shop(7);
-    }else if(e_t_i == 'musicdex'){
-        const right = document.getElementById('right');
-        if(right.style.width == '100%'){
-            right.innerHTML = '';
-            right.style.width = '0';
-        }else{
-            right.style.width = '100%';
-            right.innerHTML = '<iframe src="https://music-staging.holodex.net/org/Hololive"></iframe>';
-        }
-    }else if(e_t_i == 'charaddexp'){
-        charAddExp();
-    }else if(e_t_i == 'charrecover'){
-        charReCover();
-    }else if(e_t_i == 'charrelv'){
-        charReLv();
-    }else if(e_t_i == 'charadd'){
-        charAdd();
-    }else if(e_t_i == 'pve'){
-        checkHp();
-    }else if(e_t_i == 'pvp'){
-        window.location.href='../pvp/split.html';
+function cancelChar(){
+    dialogchar.close();
+}
+function Musicdex(){
+    const right = document.getElementById('right');
+    if(right.style.width == '100%'){
+        right.innerHTML = '';
+        right.style.width = '0';
+    }else{
+        right.style.width = '100%';
+        right.innerHTML = '<iframe src="https://music-staging.holodex.net/org/Hololive"></iframe>';
     }
 }
-
-async function Start(){
-    charObj = await getCharObj();
-    itemList = await getItemList();
-    walletList = await getWalletList();
-    picTime = 1;
-    charSelect = 'TokinoSora';
-    iconSelect = charSelect;
-    updateChoose();
-    updateStatus();
-    displayChar();
-    document.getElementById(charSelect).style.border='5px solid greenyellow';
-    document.getElementById('screen').style.backgroundImage=`url("../img/character/${charSelect}/1.png")`;
-}
-window.addEventListener("load",Start,false);
